@@ -1,0 +1,25 @@
+{
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "ignorePatterns": ["dist", "node_modules", "coverage", "storybook-static", "*.tgz"],
+  "overrides": [
+    {
+      "files": ["src/headless/**/*.ts"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["react", "react-dom", "react/*"],
+                "message": "headless 层禁止任何框架依赖"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

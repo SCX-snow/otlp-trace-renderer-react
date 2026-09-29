@@ -1,0 +1,29 @@
+[
+  {
+    "name": "react entry (side-effect import)",
+    "path": "dist/index.js",
+    "gzip": true,
+    "ignore": ["react", "react-dom"],
+    "limit": "25 kB"
+  },
+  {
+    "name": "react entry (tree-shaken TraceDetailView)",
+    "path": "dist/index.js",
+    "gzip": true,
+    "import": "{ TraceDetailView }",
+    "ignore": ["react", "react-dom"],
+    "limit": "25 kB"
+  },
+  {
+    "name": "headless",
+    "path": "dist/headless.js",
+    "gzip": true,
+    "limit": "12 kB"
+  },
+  {
+    "name": "adapters/otlp",
+    "path": "dist/adapters/otlp.js",
+    "gzip": true,
+    "limit": "6 kB"
+  }
+]

@@ -1,0 +1,16 @@
+node_modules/
+.npm-cache/
+dist/
+coverage/
+storybook-static/
+.vite/
+*.tgz
+*.log
+.idea/
+.vscode/
+*.tsbuildinfo
+.verify-pack/
+.verify-react19/
+.playwright-browsers/
+.tmp-pw/
+.shots/

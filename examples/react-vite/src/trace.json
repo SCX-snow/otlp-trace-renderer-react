@@ -1,0 +1,494 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "api-gateway"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "prod"
+            }
+          },
+          {
+            "key": "service.version",
+            "value": {
+              "stringValue": "2.14.0"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-http"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000001",
+              "name": "GET /api/orders",
+              "kind": 2,
+              "startTimeUnixNano": "1700000000000000000",
+              "endTimeUnixNano": "1700000000320000000",
+              "attributes": [
+                {
+                  "key": "http.request.method",
+                  "value": {
+                    "stringValue": "GET"
+                  }
+                },
+                {
+                  "key": "url.path",
+                  "value": {
+                    "stringValue": "/api/orders"
+                  }
+                },
+                {
+                  "key": "http.response.status_code",
+                  "value": {
+                    "intValue": "200"
+                  }
+                },
+                {
+                  "key": "client.address",
+                  "value": {
+                    "stringValue": "10.4.2.19"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "order-service"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "prod"
+            }
+          },
+          {
+            "key": "service.version",
+            "value": {
+              "stringValue": "3.2.1"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "express"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000002",
+              "name": "OrderService.listOrders",
+              "kind": 1,
+              "startTimeUnixNano": "1700000000005000000",
+              "endTimeUnixNano": "1700000000300000000",
+              "attributes": [
+                {
+                  "key": "code.function",
+                  "value": {
+                    "stringValue": "listOrders"
+                  }
+                },
+                {
+                  "key": "code.namespace",
+                  "value": {
+                    "stringValue": "OrderService"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000001",
+              "events": [
+                {
+                  "name": "log",
+                  "timeUnixNano": "1700000000009000000",
+                  "attributes": [
+                    {
+                      "key": "message",
+                      "value": {
+                        "stringValue": "listing orders for tenant=acme"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "000000000000000c",
+              "name": "serialize response",
+              "kind": 1,
+              "startTimeUnixNano": "1700000000280000000",
+              "endTimeUnixNano": "1700000000296000000",
+              "attributes": [
+                {
+                  "key": "code.function",
+                  "value": {
+                    "stringValue": "toOrderDto"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-redis-4"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000003",
+              "name": "GET order:list:acme",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000008000000",
+              "endTimeUnixNano": "1700000000014000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "redis"
+                  }
+                },
+                {
+                  "key": "db.operation",
+                  "value": {
+                    "stringValue": "GET"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-pg"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000004",
+              "name": "SELECT orders",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000020000000",
+              "endTimeUnixNano": "1700000000075000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "postgresql"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT id, total, status FROM orders WHERE tenant = $1 LIMIT 50"
+                  }
+                },
+                {
+                  "key": "db.rows_affected",
+                  "value": {
+                    "intValue": "42"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000005",
+              "name": "SELECT order_items",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000076000000",
+              "endTimeUnixNano": "1700000000110000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "postgresql"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT * FROM order_items WHERE order_id = ANY($1)"
+                  }
+                },
+                {
+                  "key": "db.rows_affected",
+                  "value": {
+                    "intValue": "318"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "000000000000000b",
+              "name": "SELECT shipping_address",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000111000000",
+              "endTimeUnixNano": "1700000000140000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "postgresql"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT * FROM addresses WHERE id = $1"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-http"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000006",
+              "name": "POST payment-service/charge",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000115000000",
+              "endTimeUnixNano": "1700000000270000000",
+              "attributes": [
+                {
+                  "key": "http.request.method",
+                  "value": {
+                    "stringValue": "POST"
+                  }
+                },
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "payment-service"
+                  }
+                },
+                {
+                  "key": "http.response.status_code",
+                  "value": {
+                    "intValue": "402"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000002"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          {
+            "key": "service.name",
+            "value": {
+              "stringValue": "payment-service"
+            }
+          },
+          {
+            "key": "deployment.environment",
+            "value": {
+              "stringValue": "prod"
+            }
+          },
+          {
+            "key": "service.version",
+            "value": {
+              "stringValue": "1.9.4"
+            }
+          }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": {
+            "name": "express"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000007",
+              "name": "POST /charge",
+              "kind": 2,
+              "startTimeUnixNano": "1700000000118000000",
+              "endTimeUnixNano": "1700000000265000000",
+              "attributes": [
+                {
+                  "key": "http.request.method",
+                  "value": {
+                    "stringValue": "POST"
+                  }
+                },
+                {
+                  "key": "url.path",
+                  "value": {
+                    "stringValue": "/charge"
+                  }
+                },
+                {
+                  "key": "http.response.status_code",
+                  "value": {
+                    "intValue": "402"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000006"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-pg"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000008",
+              "name": "SELECT payment_methods",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000120000000",
+              "endTimeUnixNano": "1700000000145000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "postgresql"
+                  }
+                },
+                {
+                  "key": "db.statement",
+                  "value": {
+                    "stringValue": "SELECT * FROM payment_methods WHERE customer_id = $1"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000007"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "@opentelemetry/instrumentation-redis-4"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "0000000000000009",
+              "name": "GET pm:cus_8812",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000146000000",
+              "endTimeUnixNano": "1700000000149000000",
+              "attributes": [
+                {
+                  "key": "db.system",
+                  "value": {
+                    "stringValue": "redis"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000007"
+            }
+          ]
+        },
+        {
+          "scope": {
+            "name": "stripe-sdk"
+          },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "000000000000000a",
+              "name": "stripe.charge",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000150000000",
+              "endTimeUnixNano": "1700000000250000000",
+              "attributes": [
+                {
+                  "key": "http.request.method",
+                  "value": {
+                    "stringValue": "POST"
+                  }
+                },
+                {
+                  "key": "server.address",
+                  "value": {
+                    "stringValue": "api.stripe.com"
+                  }
+                },
+                {
+                  "key": "http.response.status_code",
+                  "value": {
+                    "intValue": "402"
+                  }
+                }
+              ],
+              "parentSpanId": "0000000000000007",
+              "events": [
+                {
+                  "name": "exception",
+                  "timeUnixNano": "1700000000240000000",
+                  "attributes": [
+                    {
+                      "key": "exception.type",
+                      "value": {
+                        "stringValue": "CardDeclinedError"
+                      }
+                    },
+                    {
+                      "key": "exception.message",
+                      "value": {
+                        "stringValue": "card_declined: insufficient funds"
+                      }
+                    },
+                    {
+                      "key": "exception.escaped",
+                      "value": {
+                        "boolValue": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "status": {
+                "code": 2,
+                "message": "card_declined"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

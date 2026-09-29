@@ -1,0 +1,114 @@
+{
+  "name": "@slcomplex/otlp-trace-renderer",
+  "version": "0.1.0",
+  "description": "Jaeger-style OTLP trace timeline for React. Headless core + canvas renderer.",
+  "keywords": [
+    "otlp",
+    "opentelemetry",
+    "trace",
+    "tracing",
+    "jaeger",
+    "timeline",
+    "waterfall",
+    "react",
+    "react-component",
+    "canvas",
+    "observability"
+  ],
+  "homepage": "https://github.com/SCX-snow/otlp-trace-renderer-react#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SCX-snow/otlp-trace-renderer-react.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SCX-snow/otlp-trace-renderer-react/issues"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist",
+    "README_ZH.md",
+    "CHANGELOG.md"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "packageManager": "pnpm@12.6.0",
+  "engines": {
+    "node": ">=18"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./react": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./headless": {
+      "types": "./dist/headless.d.ts",
+      "import": "./dist/headless.js"
+    },
+    "./adapters/otlp": {
+      "types": "./dist/adapters/otlp.d.ts",
+      "import": "./dist/adapters/otlp.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "bench": "vitest run --config vitest.bench.config.ts",
+    "storybook": "storybook dev -p 6006",
+    "storybook:build": "storybook build",
+    "lint": "oxlint src test playground examples",
+    "format": "prettier -w .",
+    "prepublishOnly": "pnpm typecheck && pnpm test && pnpm build && pnpm size",
+    "example": "pnpm build && pnpm --filter @slcomplex/example-react-vite dev",
+    "example:headless": "pnpm build && pnpm --filter @slcomplex/example-headless-node start",
+    "size": "size-limit",
+    "publint": "publint",
+    "attw": "attw --pack . --ignore-rules cjs-resolves-to-esm no-resolution",
+    "verify:package": "pnpm build && pnpm publint && pnpm attw && pnpm size",
+    "verify:pack": "bash scripts/verify-pack.sh",
+    "browser:check": "node scripts/browser-check.mjs"
+  },
+  "peerDependencies": {
+    "react": "^18 || ^19",
+    "react-dom": "^18 || ^19"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@size-limit/esbuild": "^14.0.1",
+    "@size-limit/file": "^14.0.1",
+    "@storybook/react": "^10.6.0",
+    "@storybook/react-vite": "^10.6.0",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^26.6.3",
+    "@types/react": "^18.3.31",
+    "@types/react-dom": "^18.3.7",
+    "@vitejs/plugin-react": "^6.1.1",
+    "jsdom": "^30.1.1",
+    "oxlint": "^1.85.0",
+    "playwright": "^1.63.0",
+    "prettier": "^3.9.9",
+    "publint": "^0.3.24",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "size-limit": "^14.0.1",
+    "storybook": "^10.6.0",
+    "tinybench": "^6.2.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

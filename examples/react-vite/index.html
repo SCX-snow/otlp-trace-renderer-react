@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>otlp-trace-renderer · example</title>
+    <script>
+      // 首帧之前就定好明暗，否则深色用户会看到一闪的白底。
+      // 优先级：?theme= → localStorage → prefers-color-scheme（key 和 App 里的开关共用）
+      ;(() => {
+        let saved = null
+        try {
+          saved = localStorage.getItem('otlp-example-theme')
+        } catch {
+          // 隐私模式下读 localStorage 会抛，忽略即可
+        }
+        const fromUrl = new URLSearchParams(location.search).get('theme')
+        const dark =
+          fromUrl === 'dark' || fromUrl === 'light'
+            ? fromUrl === 'dark'
+            : saved === 'dark' || saved === 'light'
+              ? saved === 'dark'
+              : matchMedia('(prefers-color-scheme: dark)').matches
+        document.documentElement.classList.toggle('dark', dark)
+      })()
+    </script>
+    <style>
+      /* 页面自己的变量 */
+      :root {
+        color-scheme: light;
+        --app-bg: #f8fafc;
+        --app-text: #0f172a;
+        --app-border: #cbd5e1;
+        --app-surface: #ffffff;
+        --app-surface-strong: #e2e8f0;
+        --app-surface-hover: #f1f5f9;
+        --app-switch-track: #cbd5e1;
+        --app-switch-knob: #ffffff;
+      }
+
+      /*
+       * 深色模式分两半：
+       *   1. 页面自己的底色 / 边框 / 开关 —— 就是下面这组变量（纯 CSS，切 class 就行）；
+       *   2. 组件内部的主题 —— 走 `theme={DEFAULT_DARK_THEME}`（库自带的深色预设，
+       *      App.tsx 里传的），不用在这里手抄 12 个 --otlp-trace-*。
+       *
+       * 想改成纯 CSS 也行：把 `--otlp-trace-*` 覆盖写在本规则里即可 —— 库注入的默认值放在
+       * `:where(:root)`（特异度 0），`html.dark` 这种普通选择器天然盖得住。两种方式等价。
+       */
+      html.dark {
+        color-scheme: dark;
+        --app-bg: #0b1220;
+        --app-text: #e2e8f0;
+        --app-border: #1e293b;
+        --app-surface: #111a2b;
+        --app-surface-strong: #1e293b;
+        --app-surface-hover: #16233a;
+        --app-switch-track: #334155;
+        --app-switch-knob: #e2e8f0;
+      }
+
+      body {
+        margin: 0;
+        background: var(--app-bg);
+        color: var(--app-text);
+        font:
+          13px/1.5 ui-sans-serif,
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          sans-serif;
+      }
+      #root {
+        height: 100vh;
+      }
+      button {
+        font: inherit;
+        padding: 3px 10px;
+        border: 1px solid var(--app-border);
+        border-radius: 6px;
+        background: var(--app-surface);
+        color: inherit;
+        cursor: pointer;
+      }
+      button:hover {
+        background: var(--app-surface-hover);
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

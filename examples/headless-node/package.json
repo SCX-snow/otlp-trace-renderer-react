@@ -1,0 +1,12 @@
+{
+  "name": "@slcomplex/example-headless-node",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node main.ts"
+  },
+  "dependencies": {
+    "@slcomplex/otlp-trace-renderer": "workspace:*"
+  }
+}

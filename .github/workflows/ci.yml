@@ -1,0 +1,87 @@
+name: CI
+
+# push / PR 自动跑；急的时候也可以在 Actions 页面手动 Run。
+on:
+  push: { branches: [main] }
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # 本仓库自检：类型 / lint / 测试 / 构建 / 体积 / 包结构
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm build
+
+      # 体积门禁（.size-limit.json）：要读 dist，所以必须排在 build 后面
+      - run: pnpm size
+
+      # 包结构 + 类型解析（attw 带上 --ignore-rules，两类 ESM-only 告警见 DECISIONS.md D31）
+      - run: pnpm publint
+      - run: pnpm attw
+
+  # peer 声明是 ^18 || ^19，但 devDeps 只能装一个 React（18）。这条跑另一半。
+  react19:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: bash scripts/verify-react19.sh
+
+  # 真浏览器回归：渲染 / 深色预设 / 滚动后点击与悬停对齐 / 触摸 / 控制台干净。
+  # jsdom 没有布局和真滚动，滚动坐标类的 bug 只有这一层抓得住。
+  browser:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: npx playwright install --with-deps chromium
+      - run: pnpm browser:check
+
+  # 真 tarball 装进空项目跑一遍（React 18 + 19），验证 exports / types / tree-shaking。
+  # 比 publint/attw 更接近真实消费，所以放 CI 而不是只留在本地。
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: bash scripts/verify-pack.sh

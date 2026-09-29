@@ -1,0 +1,137 @@
+name: Release
+
+# 三条路径都在这一个文件里（npm publish 必须留在 publish.yml，trusted publishing 认的就是这个文件名）：
+#   A 自动：推 main（含合并 release PR）→ release-please 维护 CHANGELOG.md / package.json 版本号，
+#          并开一个 "chore(main): release x.y.z" PR；你合并它 → 它打 vX.Y.Z tag + 建 GitHub Release
+#          → 同一个 run 里接着发布到 npm。
+#   B 手动：自己推 vX.Y.Z tag（应急发布）→ 直接走 publish job。
+#   C 演练：Actions 页面手动 Run（dry_run 默认 true，只打包不上传）。
+#
+# 为什么不用 `on: push: tags` 单独触发：release-please 用 GITHUB_TOKEN 打的 tag 不会触发新的
+# workflow（GitHub 防递归的规则），所以发布必须跟在同一个 run 里 —— 除非改用 PAT 当 token。
+#
+# 认证走 npm trusted publishing（OIDC），不需要任何 secret。配置见文件末尾。
+on:
+  push:
+    branches: [main]
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: '只演练不真发（npm publish --dry-run）'
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+# 同一时间只跑一个发布，避免两次 publish 撞车；进行中的不取消
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  # Conventional Commits → release PR / tag / GitHub Release
+  release:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # 建 tag / Release / 推 release 分支
+      pull-requests: write # 开、更新 release PR
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+
+  # 发到 npm
+  publish:
+    needs: release
+    if: |
+      always() && (
+        github.event_name == 'workflow_dispatch' ||
+        needs.release.outputs.release_created == 'true' ||
+        startsWith(github.ref, 'refs/tags/v')
+      )
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # npm provenance / trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 12.6.0
+
+      # 故意不写 cache：npm 文档建议发布构建不要复用包缓存（缓存被污染会进入发布产物）
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+
+      # trusted publishing / provenance 需要 npm >= 11.5.1
+      - run: npm install -g npm@latest
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: 校验 tag 与 package.json 版本一致
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          tag="${GITHUB_REF_NAME#v}"
+          pkg="$(node -p "require('./package.json').version")"
+          if [ "$tag" != "$pkg" ]; then
+            echo "::error::tag $GITHUB_REF_NAME 与 package.json 的 $pkg 不一致。先改版本号提交，再打对应 tag。"
+            exit 1
+          fi
+
+      # 手动首发过、或重跑同一个 tag 时，版本已经在 npm 上 → 跳过发布（这不是失败）
+      - name: 该版本是否已发布
+        id: published
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::手动 Run：跳过「已发布」检查，走演练流程"
+            exit 0
+          fi
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::$name@$version 已在 npm 上，跳过发布"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      # 发布前门禁。npm publish 之后还会跑 prepublishOnly（typecheck + test + build + size），
+      # 所以这里只补它没覆盖的几项；要读 dist，所以 build 放在最前。
+      - if: steps.published.outputs.skip != 'true'
+        run: pnpm build
+      - if: steps.published.outputs.skip != 'true'
+        run: pnpm lint
+      - if: steps.published.outputs.skip != 'true'
+        run: pnpm publint
+      - if: steps.published.outputs.skip != 'true'
+        run: pnpm attw
+
+      - name: 发布到 npm
+        if: steps.published.outputs.skip != 'true'
+        run: npm publish --provenance --access public ${INPUTS_DRY_RUN}
+        env:
+          INPUTS_DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run && '--dry-run' || '' }}
+          # 走 trusted publishing 时不需要 NODE_AUTH_TOKEN。万一要退回 token：npm 只支持
+          # Granular token，需勾 Bypass 2FA、给 Packages 读写权限，配好 NPM_TOKEN secret 后
+          # 取消下面这行注释。
+          # NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+# 一次性配置（在第一个版本手动发布之后做，因为 trusted publisher 只能配在已存在的包上）：
+#   npmjs.com → 该包 → Settings → Trusted publishing → GitHub Actions
+#     Organization or user   = SCX-snow
+#     Repository             = otlp-trace-renderer-react
+#     Workflow filename      = publish.yml
+#     Environment name       = （留空）
+#     Allowed actions        = 勾上 npm publish（新配置默认只允许 npm stage publish）

@@ -1,0 +1,77 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.name", "value": { "stringValue": "frontend" } },
+          { "key": "deployment.environment", "value": { "stringValue": "prod" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "@opentelemetry/instrumentation-http", "version": "0.50.0" },
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "eee19b7ec3c1b174",
+              "name": "HTTP GET /api/orders",
+              "kind": 2,
+              "startTimeUnixNano": "1700000000000000000",
+              "endTimeUnixNano": "1700000000500000000",
+              "attributes": [
+                { "key": "http.request.method", "value": { "stringValue": "GET" } },
+                { "key": "http.response.status_code", "value": { "intValue": "500" } }
+              ],
+              "events": [
+                {
+                  "name": "exception",
+                  "timeUnixNano": "1700000000450000000",
+                  "attributes": [
+                    { "key": "exception.type", "value": { "stringValue": "TimeoutError" } }
+                  ]
+                }
+              ],
+              "status": { "code": 2, "message": "upstream timeout" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [{ "key": "service.name", "value": { "stringValue": "orders" } }]
+      },
+      "scopeSpans": [
+        {
+          "spans": [
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "aaa19b7ec3c1b111",
+              "parentSpanId": "eee19b7ec3c1b174",
+              "name": "SELECT orders",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000100000000",
+              "endTimeUnixNano": "1700000000150000000",
+              "attributes": [{ "key": "db.system", "value": { "stringValue": "postgresql" } }]
+            },
+            {
+              "traceId": "5b8efff798038103d269b633813fc60c",
+              "spanId": "bbb19b7ec3c1b222",
+              "parentSpanId": "eee19b7ec3c1b174",
+              "name": "POST /charge",
+              "kind": 3,
+              "startTimeUnixNano": "1700000000200000000",
+              "endTimeUnixNano": "1700000000420000000",
+              "links": [
+                {
+                  "traceId": "00000000000000000000000000000001",
+                  "spanId": "1111111111111111"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

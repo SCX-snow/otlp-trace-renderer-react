@@ -1,0 +1,61 @@
+{
+  "resourceSpans": [
+    {
+      "resource": {
+        "attributes": [{ "key": "service.name", "value": { "stringValue": "broken" } }]
+      },
+      "scopeSpans": [
+        {
+          "spans": [
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "aaaaaaaaaaaaaaaa",
+              "name": "root",
+              "startTimeUnixNano": "1700000000100000000",
+              "endTimeUnixNano": "1700000001100000000"
+            },
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "bbbbbbbbbbbbbbbb",
+              "parentSpanId": "deadbeefdeadbeef",
+              "name": "missing parent",
+              "startTimeUnixNano": "1700000000200000000",
+              "endTimeUnixNano": "1700000000300000000"
+            },
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "cccccccccccccccc",
+              "name": "negative duration",
+              "startTimeUnixNano": "1700000000500000000",
+              "endTimeUnixNano": "1700000000400000000"
+            },
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "dddddddddddddddd",
+              "parentSpanId": "aaaaaaaaaaaaaaaa",
+              "name": "starts before parent",
+              "startTimeUnixNano": "1700000000000000000",
+              "endTimeUnixNano": "1700000000050000000"
+            },
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "eeeeeeeeeeeeeeee",
+              "parentSpanId": "ffffffffffffffff",
+              "name": "cycle a",
+              "startTimeUnixNano": "1700000000600000000",
+              "endTimeUnixNano": "1700000000650000000"
+            },
+            {
+              "traceId": "11111111111111111111111111111111",
+              "spanId": "ffffffffffffffff",
+              "parentSpanId": "eeeeeeeeeeeeeeee",
+              "name": "cycle b",
+              "startTimeUnixNano": "1700000000610000000",
+              "endTimeUnixNano": "1700000000660000000"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
