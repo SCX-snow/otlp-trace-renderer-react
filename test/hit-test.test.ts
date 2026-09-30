@@ -9,8 +9,8 @@ const m = DEFAULT_METRICS
 const W = 1000
 const trace = toTraceData([rawSpan('root', 0, 1000), rawSpan('child', 200, 400, 'root')])
 const rows = flattenRows(trace, new Set())
-const viewport = { startUs: 0, spanUs: 1000 } // 1µs = 1px
-// 时间映射宽度 = 1000 - 左右留白 16 = 984（树深度不再影响横坐标）
+const viewport = { startUs: 0, spanUs: 1000 }
+
 const axis = resolveTimeAxis(W, m)
 const rowY = (rowIndex: number) => m.rulerHeight + m.paddingTop + rowIndex * m.rowHeight + 8
 
@@ -32,7 +32,7 @@ describe('rowAtY', () => {
 })
 
 describe('rowAtY · 滚动后（y 是视口坐标）', () => {
-  // 10 条平铺 span，滚 3 行
+
   const many = toTraceData(
     Array.from({ length: 10 }, (_, i) => rawSpan(`s${i}`, i * 10, i * 10 + 5)),
   )
@@ -47,7 +47,7 @@ describe('rowAtY · 滚动后（y 是视口坐标）', () => {
   it('标尺带（sticky，盖在行上面）不算命中', () => {
     expect(rowAtY(m.rulerHeight - 1, manyRows.length, m, SCROLL)).toBe(-1)
     expect(rowAtY(0, manyRows.length, m, SCROLL)).toBe(-1)
-    // 标尺下面一个像素就落在被它盖住的那一行上（滚动后不再是第 0 行）
+
     expect(rowAtY(m.rulerHeight, manyRows.length, m, SCROLL)).toBe(2)
   })
 
@@ -64,7 +64,7 @@ describe('rowAtY · 滚动后（y 是视口坐标）', () => {
 describe('barRange', () => {
   it('起点 = 左留白 + 时间映射（和树深度无关）', () => {
     expect(barRange(rows[0]!, trace, viewport, m, axis)).toEqual({ x0: 8, x1: 992 })
-    // 第二行虽然深度是 1，横坐标也只按时间算（1µs = 0.984px）
+
     const child = barRange(rows[1]!, trace, viewport, m, axis)
     expect(child.x0).toBeCloseTo(8 + 200 * 0.984)
     expect(child.x1).toBeCloseTo(8 + 400 * 0.984)
@@ -78,7 +78,7 @@ describe('barRange', () => {
   })
 
   it('深处的 span 落在 trace 末尾时，右边缘仍在画布内', () => {
-    // 回归：横坐标曾经把树深度缩进加在时间映射之外，靠后 + 深的 span 会被推到画布外（看不见）
+
     const deep = toTraceData([
       rawSpan('root', 0, 1000),
       rawSpan('l1', 0, 1000, 'root'),

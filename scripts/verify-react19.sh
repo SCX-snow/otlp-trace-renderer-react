@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# 用 React 19 跑一遍**全量测试**。
-#
-# 为什么不能直接在本仓库跑：单包只装得下一个 React，devDependencies 固定 18。
-# 所以这里把 src/test（+ example 的两个文件，example-dark-mode.test.ts 要读）拷进一个空目录，
-# 装 React 19 和测试依赖，再跑 vitest。CI 与本地共用这一个脚本（见 .github/workflows/ci.yml）。
-#
-# 用法：bash scripts/verify-react19.sh [react 版本范围，默认 ^19]
-# 需要网络；现场留在 .verify-react19/（gitignore 已忽略）。
+
+
+
+
+
+
+
+
 
 set -euo pipefail
 
@@ -22,10 +22,10 @@ step "准备空目录（React $REACT_VERSION）"
 rm -rf "$WORK"
 mkdir -p "$WORK/examples/react-vite/src"
 cp -r "$ROOT/src" "$ROOT/test" "$ROOT/stories" "$ROOT/tsconfig.json" "$WORK/"
-# test/example-dark-mode.test.ts 会读 example 的这两个文件
+
 cp "$ROOT/examples/react-vite/index.html" "$WORK/examples/react-vite/"
 cp "$ROOT/examples/react-vite/src/App.tsx" "$WORK/examples/react-vite/src/"
-# 目录名不能带点：npm init -y 会报 Invalid name，所以直接写 package.json
+
 printf '{"name":"verify-react19","private":true,"type":"module"}\n' > "$WORK/package.json"
 done_ "src / test / stories / examples 已就位"
 

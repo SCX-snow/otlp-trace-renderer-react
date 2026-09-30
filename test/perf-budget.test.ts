@@ -14,16 +14,16 @@ import { DEFAULT_THEME } from '../src/headless/theme/tokens'
 import { createNullCtx } from './fake-ctx'
 import { at, makeTraceData, rawSpan } from './helpers/trace-factory'
 
-/**
- * 性能**护栏**，不是基准。基准（`pnpm bench`，tinybench）给人看中位数；
- * 这里的作用是：谁把某个 O(1)/O(n) 写成了 O(n²)，CI 会直接红。
- *
- * 阈值一律留 10–80 倍余量 —— 共享 CI 机器的噪音可以轻松把单次测量放大几倍，
- * 但算法级退化（比如 hitTest 改成遍历所有行、flattenRows 改成递归拼数组）会轻松冲破这些线。
- * 真实预算（一帧 < 8ms）看 `test/bench/draw.bench.ts` 打出的表。
- */
 
-/** 跑 repeats 轮，每轮 iterations 次，取每轮单次耗时的中位数（ms） */
+
+
+
+
+
+
+
+
+
 function medianPerOp(run: () => void, iterations: number, repeats = 5): number {
   const samples: number[] = []
   for (let round = 0; round < repeats; round++) {
@@ -31,7 +31,7 @@ function medianPerOp(run: () => void, iterations: number, repeats = 5): number {
     for (let i = 0; i < iterations; i++) run()
     samples.push((performance.now() - start) / iterations)
   }
-  // eslint-disable-next-line unicorn/no-array-sort -- toSorted 需要 ES2023，产物目标是 es2020
+
   samples.sort((a, b) => a - b)
   return samples[Math.floor(samples.length / 2)]!
 }
@@ -61,7 +61,7 @@ const scene: TimelineScene = {
   serviceColors,
 }
 
-/** 32 个 service、5k span 的规整输入，用来量 normalizeTrace */
+
 const rawSpans: RawSpan[] = Array.from({ length: 5000 }, (_, i) => ({
   ...rawSpan(`s${String(i).padStart(6, '0')}`, i * 20, i * 20 + 15, null),
   startTimeUnixNano: at(i * 20),

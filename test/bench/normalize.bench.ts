@@ -15,7 +15,7 @@ function build(withSelfCycles: boolean): RawSpan[] {
     const parentIndex = i === 0 ? null : Math.floor(i / 2)
     spans.push({
       spanId: id(i),
-      // withSelfCycles：故意让 1/7 的 span 父指向自己，逼出断环分支
+
       parentSpanId:
         parentIndex === null ? null : id(withSelfCycles && i % 7 === 0 ? i : parentIndex),
       name: `op-${i}`,

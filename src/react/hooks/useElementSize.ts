@@ -9,15 +9,15 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
 
 const EMPTY: ElementSize = { width: 0, height: 0 }
 
-/**
- * 尺寸测量。
- *
- * ResizeObserver 的**首次回调是异步的**（在下一帧布局之后），只靠它的话首帧拿到的是 0×0 ——
- * 表现出来就是「组件挂载后先是空白，一帧之后才出现内容」，headless 截图里干脆一直是空白。
- * 所以先用 layout effect 同步量一次（提交后、绘制前），再由 ResizeObserver 持续跟进。
- *
- * 量的是内容盒：已经扣掉了边框、内边距和滚动条，正好是「能画东西的那块地」。
- */
+
+
+
+
+
+
+
+
+
 export function useElementSize(ref: { readonly current: HTMLElement | null }): ElementSize {
   const [size, setSize] = useState<ElementSize>(EMPTY)
 

@@ -88,7 +88,7 @@ describe('computeVisibleRows', () => {
   })
 
   it('滚动后窗口跟着移动', () => {
-    // 行高 22，第三行从 32 + 44 = 76 开始
+
     const { start, end } = computeVisibleRows(rows, M, 44, 100)
     expect(start).toBe(Math.max(0, Math.floor((44 - rowOrigin(M)) / M.rowHeight)))
     expect(end).toBeLessThanOrEqual(rows.length)
@@ -110,7 +110,7 @@ describe('computeVisibleRows', () => {
   })
 })
 
-/** 假 ctx 里量出来的标签横向区间（相对 canvas 左边） */
+
 function labelSpans(ops: ReturnType<typeof createFakeCtx>['ops']) {
   return ops
     .filter((op) => op.op === 'fillText')
@@ -139,14 +139,14 @@ describe('drawRuler · 刻度标签完整可见', () => {
       axis.timeWidth,
       computeDivisions(axis.timeWidth),
     )
-    // 每个刻度都有标签（以前末端那条算下来会画到画布外，被切掉一半）
+
     expect(labels).toHaveLength(ticks.length)
     const last = labels.at(-1)!
     expect(last.text).toBe(ticks.at(-1)!.label)
     expect(last.align).toBe('right')
     expect(last.to).toBeLessThanOrEqual(width)
     expect(last.from).toBeGreaterThan(0)
-    // 它仍然贴着自己那条网格线（在线的左边 LABEL_GAP=3 处）
+
     expect(last.to).toBe(M.paddingX + axis.timeWidth - 3)
   })
 
@@ -166,7 +166,7 @@ describe('drawRuler · 刻度标签完整可见', () => {
         .filter((label) => label.from < 0 || label.to > width)
         .map((label) => `"${label.text}" ${label.from}..${label.to}`)
       expect(clipped).toEqual([])
-      // 放得下就必须画出来（不能因为末端溢出就把整条刻度丢掉）
+
       expect(labelSpans(ops).length).toBeGreaterThanOrEqual(width >= 320 ? 2 : 1)
     }
   })
@@ -181,15 +181,15 @@ describe('drawTimeline', () => {
       (op) => op.op === 'fillRect' && op.fillStyle === buildServiceColors(trace).get('svc'),
     )
     expect(bars).toHaveLength(3)
-    // 时间映射宽度 = 1000 - 左右留白 16 = 984（1µs = 0.984px），树深度不影响横坐标
-    // root：左留白 8，宽 984
+
+
     expect(bars[0]!.args).toEqual([8, 35, 984, M.barHeight])
-    // 第二行 start=100 → 8 + 98.4 = 106.4，end=400 → 401.6
+
     expect(bars[1]!.args).toEqual([106, 57, 296, M.barHeight])
   })
 
   it('靠后的 span 不会被挤出右边界', () => {
-    // 深处的 span 又落在 trace 末尾：长条右边缘必须还在画布内，否则等于看不见
+
     const deep = toTraceData([
       rawSpan('root', 0, 1000),
       rawSpan('l1', 0, 990, 'root'),
@@ -259,7 +259,7 @@ describe('drawTimeline', () => {
     expect(byStyle.get(DEFAULT_THEME.rowHover)).toBeDefined()
     expect(byStyle.get(DEFAULT_THEME.rowSelected)).toBeDefined()
     expect(DEFAULT_THEME.rowHover).not.toBe(DEFAULT_THEME.rowSelected)
-    // 行序：root(0) / a(1) / b(2) → 选中的是第 1 行、悬停的是第 2 行
+
     expect(byStyle.get(DEFAULT_THEME.rowSelected)).toBe(rowOrigin(M) + M.rowHeight)
     expect(byStyle.get(DEFAULT_THEME.rowHover)).toBe(rowOrigin(M) + 2 * M.rowHeight)
   })
@@ -280,7 +280,7 @@ describe('drawTimeline', () => {
   it('canvas 不画折叠三角（它已经搬到左侧名称列）', () => {
     const { ctx, ops } = createFakeCtx()
     drawTimeline(ctx, scene())
-    // 唯一还会用路径的绘制是……没有：长条/网格/标尺带全是 fillRect/fillText
+
     expect(
       ops.filter((op) => op.op === 'closePath' || op.op === 'moveTo' || op.op === 'lineTo'),
     ).toEqual([])
@@ -288,7 +288,7 @@ describe('drawTimeline', () => {
 
   it('标尺盖在网格线和长条之后（sticky 标尺必须挡住半行长条）', () => {
     const { ctx, ops } = createFakeCtx()
-    // 滚到半行位置：第一行会被标尺带盖住一半
+
     drawTimeline(ctx, scene({ scrollTop: 17 }))
     const isBand = (op: (typeof ops)[number]) =>
       op.op === 'fillRect' && op.args[3] === M.rulerHeight - 1 && op.fillStyle === DEFAULT_THEME.bg
@@ -303,7 +303,7 @@ describe('drawTimeline', () => {
     )
     expect(lastGrid).toBeGreaterThanOrEqual(0)
     expect(lastBar).toBeGreaterThanOrEqual(0)
-    // 顺序必须是：网格线（背景）→ 长条 → 标尺带（把前两者都盖住）
+
     expect(rulerBand).toBeGreaterThan(lastGrid)
     expect(rulerBand).toBeGreaterThan(lastBar)
   })

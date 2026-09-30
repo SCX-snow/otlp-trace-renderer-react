@@ -11,7 +11,7 @@ import type {
 import { asArray, base64ToHex, flattenAttributes } from './any-value'
 
 export interface NormalizeOtlpOptions {
-  /** 输入含多条 trace 时指定要哪条；不指定则取 span 最多的那条 */
+
   traceId?: TraceId
 }
 
@@ -23,10 +23,10 @@ function pick(obj: Record<string, unknown>, camel: string, snake: string): unkno
 
 const HEX = /^[0-9a-f]+$/i
 
-/**
- * OTLP/JSON 规范说 traceId/spanId 是 hex，但 protojson 默认输出 base64。
- * 两种都认，统一成小写 hex。
- */
+
+
+
+
 function toHexId(value: unknown, bytes: number): string {
   if (typeof value !== 'string') return ''
   const id = value.trim()
@@ -142,12 +142,12 @@ interface Bucket {
   resources: ResourceData[]
 }
 
-/**
- * OTLP/JSON → 规范模型。
- *
- * 只处理单条 trace：输入含多条时按 traceId 分组，取 `opts.traceId` 指定的那条，
- * 未指定则取 span 最多的那条，并在 warnings 里记一条 multiple-traces。
- */
+
+
+
+
+
+
 export function normalizeOtlpTrace(json: unknown, opts: NormalizeOtlpOptions = {}): TraceData {
   if (!isObj(json)) throw new TypeError('normalizeOtlpTrace: 期望一个 OTLP JSON 对象')
 
@@ -171,7 +171,7 @@ export function normalizeOtlpTrace(json: unknown, opts: NormalizeOtlpOptions = {
           bucket = { spans: [], resources: [] }
           buckets.set(traceId, bucket)
         }
-        // 同一个 resourceSpans 条目共用一个 ResourceData 对象，引用相等即可去重
+
         let resourceIndex = bucket.resources.indexOf(resource)
         if (resourceIndex === -1) {
           resourceIndex = bucket.resources.length
@@ -198,7 +198,7 @@ export function normalizeOtlpTrace(json: unknown, opts: NormalizeOtlpOptions = {
     chosenId = wanted
     chosen = found
   } else {
-    // eslint-disable-next-line unicorn/no-array-sort -- toSorted 需要 ES2023，产物目标是 es2020
+
     const entries = [...buckets.entries()].sort(
       (a, b) => b[1].spans.length - a[1].spans.length || (a[0] < b[0] ? -1 : 1),
     )

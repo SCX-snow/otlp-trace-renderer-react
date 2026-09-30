@@ -14,7 +14,7 @@ function resources(names: string[]) {
   }))
 }
 
-/** 确定性二叉树，用来压规模：count 个 span，跨度 count*20µs */
+
 export function syntheticTrace(count: number): TraceData {
   const spans: RawSpan[] = []
   for (let i = 0; i < count; i++) {
@@ -37,7 +37,7 @@ export function syntheticTrace(count: number): TraceData {
   return normalizeTrace({ traceId: 'ab'.repeat(16), spans, resources: resources(SERVICES) })
 }
 
-/** 一个有层级的、可信的小 trace：3 个 service、4 层、1 个 error */
+
 export function realisticTrace(): TraceData {
   const spec: [number, number | null, string, string, number, number, 'unset' | 'error'][] = [
     [0, null, 'api-gateway', 'GET /api/orders', 0, 320, 'unset'],

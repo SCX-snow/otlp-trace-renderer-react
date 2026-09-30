@@ -1,13 +1,13 @@
-// @vitest-environment jsdom
+
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { installDomShims } from './dom-shims'
 
-/**
- * Storybook 的预览是 load 之后异步渲染的，headless 截图拍不到内容，
- * 所以「每个 story 都能渲染」这条验收改成用 portable stories 在 jsdom 里跑。
- * 好处是顺带变成了 CI 门禁：story 写炸了会直接挂测试。
- */
+
+
+
+
+
 type ComposedStories = Record<string, (props: Record<string, unknown>) => JSX.Element>
 
 let composed: ComposedStories

@@ -12,8 +12,8 @@ import {
 } from '../src/headless/layout/viewport'
 import { makeRandom } from './helpers/trace-factory'
 
-const D = 1_000_000 // trace 总时长 1s
-const W = 1000 // 时间轴宽 1000px → 1µs = 1px，数字好对
+const D = 1_000_000
+const W = 1000
 
 describe('toX / toT', () => {
   it('互为逆变换', () => {

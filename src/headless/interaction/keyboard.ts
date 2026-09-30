@@ -1,8 +1,8 @@
-/**
- * 键盘 → 命令的映射。纯函数，组件只负责把命令分发给 reducer。
- *
- * 修饰键规则：Ctrl/Cmd 组合一律放过（不抢浏览器的快捷键）；Shift 只用于时间轴平移。
- */
+
+
+
+
+
 export type KeyboardCommand =
   | { type: 'moveSelection'; delta: number }
   | { type: 'setCollapsed'; collapsed: boolean }
@@ -33,7 +33,7 @@ export function resolveKeyCommand(event: KeyLike): KeyboardCommand | null {
     case 'ArrowUp':
       return { type: 'moveSelection', delta: -1 }
     case 'ArrowRight':
-      // Shift + 方向键看更晚/更早的时间
+
       return event.shiftKey
         ? { type: 'panByFraction', fraction: PAN_FRACTION }
         : { type: 'setCollapsed', collapsed: false }

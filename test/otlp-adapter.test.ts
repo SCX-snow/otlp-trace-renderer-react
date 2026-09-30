@@ -15,7 +15,7 @@ const TRACE_HEX = '5b8efff798038103d269b633813fc60c'
 const ID_HEX = 'eee19b7ec3c1b174'
 const toB64 = (hex: string) => Buffer.from(hex, 'hex').toString('base64')
 
-/** 一个最小的 OTLP 文档，id 编码可切换 */
+
 function doc(ids: { traceId: string; spanId: string }, snake = false) {
   const spanObj: Record<string, unknown> = {
     [snake ? 'trace_id' : 'traceId']: ids.traceId,
@@ -130,7 +130,7 @@ describe('normalizeOtlpTrace', () => {
     expect(attrs['s']).toBe('x')
     expect(attrs['b']).toBe(false)
     expect(attrs['d']).toBe(1.5)
-    expect(attrs['big']).toBe('9007199254740993') // 超出安全整数就保留字符串
+    expect(attrs['big']).toBe('9007199254740993')
     expect(attrs['bytes']).toBe('AQID')
     expect(attrs['arr']).toEqual([1, 'two'])
     expect(attrs['kv']).toEqual({ inner: true })

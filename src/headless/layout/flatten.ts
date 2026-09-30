@@ -6,11 +6,11 @@ export interface Row {
   depth: number
 }
 
-/**
- * 树 → 行。前序 DFS，折叠的节点还在，但不下钻。
- *
- * 显式栈而不是递归：深链（5000 层）的 trace 会直接爆栈。
- */
+
+
+
+
+
 export function flattenRows(
   trace: TraceData,
   collapsed: ReadonlySet<SpanId>,

@@ -15,7 +15,7 @@ export function rowOfSpan(rows: Row[], trace: TraceData, spanId: SpanId | null):
   return -1
 }
 
-/** 自顶向下的祖先 spanId 列表（祖先用 parentSpanId 走，不依赖行序） */
+
 export function ancestorsOf(trace: TraceData, spanIndex: number): SpanId[] {
   const out: SpanId[] = []
   const guard = new Set<number>()
@@ -27,11 +27,11 @@ export function ancestorsOf(trace: TraceData, spanIndex: number): SpanId[] {
     out.push(current)
     current = trace.spans[index]!.parentSpanId
   }
-  // eslint-disable-next-line unicorn/no-array-reverse -- toReversed 需要 ES2023，产物目标是 es2020
+
   return out.reverse()
 }
 
-/** 时长分布，只排一次；配色时用二分查百分位，别每帧线性扫 */
+
 export function precomputeDurations(trace: TraceData): Float64Array {
   const durations = new Float64Array(trace.spans.length)
   for (let i = 0; i < trace.spans.length; i++) durations[i] = trace.spans[i]!.durationUs
@@ -39,7 +39,7 @@ export function precomputeDurations(trace: TraceData): Float64Array {
   return durations
 }
 
-/** 落在 [0, 1]，表示这条 span 的时长在整条 trace 里的分位 */
+
 export function durationPercentile(sortedDurations: Float64Array, durationUs: number): number {
   const n = sortedDurations.length
   if (n === 0) return 0

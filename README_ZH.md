@@ -10,7 +10,7 @@ Jaeger 风格的 OTLP 调用链（trace）时间轴组件，适用于 React 框�
 
 ```bash
 npm install @slcomplex/otlp-trace-renderer
-# 或 pnpm add / yarn add
+
 ```
 
 ## 快速开始
@@ -18,7 +18,7 @@ npm install @slcomplex/otlp-trace-renderer
 ```tsx
 import { TraceDetailView } from '@slcomplex/otlp-trace-renderer'
 import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
-import otlpJson from './trace.json' // OTLP/JSON: { resourceSpans: [...] }
+import otlpJson from './trace.json'
 
 const trace = normalizeOtlpTrace(otlpJson)
 
@@ -64,9 +64,9 @@ import {
   resolveTimeAxis,
 } from '@slcomplex/otlp-trace-renderer/headless'
 
-const trace = normalizeTrace({ traceId, spans, resources }) // 规范内部模型
-const rows = flattenRows(trace, new Set()) // 树 → 行（前序 DFS，显式栈）
-const axis = resolveTimeAxis(1200, DEFAULT_METRICS) // 时间映射宽度
+const trace = normalizeTrace({ traceId, spans, resources })
+const rows = flattenRows(trace, new Set())
+const axis = resolveTimeAxis(1200, DEFAULT_METRICS)
 ```
 
 ## 主要 props（`TraceDetailView`）
@@ -186,7 +186,7 @@ pnpm typecheck        # tsc --noEmit
 pnpm lint             # oxlint
 pnpm build            # tsup → dist（ESM + .d.ts）
 
-# 发布门禁（与 CI 相同）
+
 pnpm verify:package   # build + publint + attw + size-limit
 pnpm verify:pack      # 真 tarball 装进空项目跑一遍（React 18 / 19）
 pnpm browser:check    # 真浏览器回归（Playwright + chromium）

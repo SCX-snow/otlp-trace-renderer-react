@@ -8,11 +8,11 @@ import {
 import { SERVICE_PALETTE, SERVICE_PALETTE_DARK } from '../src/render/colors'
 import { contrastRatio as contrast, hueOf, inRedBand } from './helpers/color'
 
-/**
- * 两套预设都得「拿起来就能用」，所以这里把两件事钉死：
- * 1. token 必须一个不漏（ThemeTokens 的类型已经保证，运行时再兜一层，防止有人手抖改宽类型）；
- * 2. 对比度要过 WCAG 门槛 —— 深色预设最容易出的错就是「看着挺酷，文本读不清」。
- */
+
+
+
+
+
 
 const tokenKeys = Object.keys(TOKENS) as ThemeToken[]
 
@@ -73,7 +73,7 @@ describe('service 色板', () => {
     for (const color of SERVICE_PALETTE_DARK) {
       expect(contrast(color, bg)).toBeGreaterThanOrEqual(3)
     }
-    // 顺带记录：亮色板里最暗的那两个在深底上确实不够
+
     const dimmest = Math.min(...SERVICE_PALETTE.map((color) => contrast(color, bg)))
     expect(dimmest).toBeLessThan(4)
   })

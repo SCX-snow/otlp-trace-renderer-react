@@ -19,13 +19,13 @@ export interface ViewState {
 
 export interface ReducerCtx {
   trace: TraceData
-  /** 时间轴绘制宽度（CSS 像素） */
+
   width: number
 }
 
-/** reducer 不做副作用，需要外部配合的事情放这里 */
+
 export interface ReducerEffects {
-  /** 纵向滚动到这个行号（focusSpan 用） */
+
   scrollToRow?: number
 }
 
@@ -69,7 +69,7 @@ function withViewport(state: ViewState, next: Viewport): [ViewState, ReducerEffe
   return next === state.viewport ? [state, NO_EFFECTS] : [{ ...state, viewport: next }, NO_EFFECTS]
 }
 
-/** 展开某个 span 的全部祖先；本来就没折叠返回 null（调用方据此保持 state 引用） */
+
 function expandAncestors(state: ViewState, trace: TraceData, spanIndex: number): ViewState | null {
   const next = new Set(state.collapsed)
   let changed = false
@@ -113,7 +113,7 @@ export function traceReducer(
       return withViewport(state, panByPx(state.viewport, action.dxPx, ctx.width, durationUs))
 
     case 'panByFraction':
-      // 正 fraction = 看更晚的时间。宽度未知时不动（免得把视口瞬移出去）
+
       if (ctx.width <= 0) return [state, NO_EFFECTS]
       return withViewport(
         state,
@@ -149,7 +149,7 @@ export function traceReducer(
     }
 
     case 'setCollapsed': {
-      // 键盘的 ←/→ 要幂等：已经折了再按 ← 不该变成展开
+
       const spanIndex = indexOfSpan(trace, action.spanId)
       if (spanIndex === -1) return [state, NO_EFFECTS]
       if (!action.collapsed && trace.children[spanIndex]!.length === 0) return [state, NO_EFFECTS]

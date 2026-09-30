@@ -14,7 +14,7 @@ import type { NormalizeWarning } from '../src/headless/model/types'
 
 const KEYS = Object.keys(MESSAGES.en) as (keyof Messages)[]
 const PLACEHOLDER = /\{(\w+)\}/g
-// eslint-disable-next-line unicorn/no-array-sort -- toSorted 需要 ES2023，产物目标是 es2020
+
 const placeholders = (text: string) => [...text.matchAll(PLACEHOLDER)].map((m) => m[1]).sort()
 
 describe('resolveLocale', () => {
@@ -85,7 +85,7 @@ describe('resolveMessages', () => {
   it('按 locale 取内置字典', () => {
     expect(resolveMessages('ja').zoomIn).toBe('拡大')
     expect(resolveMessages('zh-TW').fit).toBe('符合視窗')
-    // undefined → 读环境语言，不强假定是哪一种
+
     expect(resolveMessages(undefined)).toBe(MESSAGES[resolveLocale(undefined)])
   })
 

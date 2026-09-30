@@ -11,14 +11,14 @@ export function themeToCss(theme: Partial<ThemeTokens>): string {
     .join(';')
 }
 
-/**
- * 注入默认值，引用计数归零时移除。
- *
- * 用 `:where(:root)` 而不是 `:root`：`:where()` 特异度为 0，用户在任何地方写的
- * `--otlp-trace-*` 都能盖住它，不需要 `!important` 或者更长的选择器打架。
- *
- * StrictMode 下 mount → unmount → mount 会走一遍 1 → 0 → 1，结果同样只有一个 style 元素。
- */
+
+
+
+
+
+
+
+
 export function acquireThemeDefaults(): () => void {
   if (typeof document === 'undefined') return () => {}
   refCount += 1
@@ -41,7 +41,7 @@ export function acquireThemeDefaults(): () => void {
   }
 }
 
-/** 只给测试和调试用 */
+
 export function themeRefCount(): number {
   return refCount
 }

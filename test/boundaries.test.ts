@@ -14,7 +14,7 @@ const FORBIDDEN: { pattern: RegExp; reason: string }[] = [
   { pattern: /\bCanvasRenderingContext2D\b/, reason: 'headless 层不得依赖 canvas 类型' },
 ]
 
-// navigator 不在禁用列表：i18n 的 resolveLocale 需要读它，但必须在函数体内并带 typeof 守卫。
+
 function tsFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name)

@@ -1,7 +1,7 @@
-/**
- * headless 层的用法：不装 React、不过打包器，Node 直接跑。
- * `pnpm example:headless`（会先 build 出 dist）
- */
+
+
+
+
 import { readFileSync } from 'node:fs'
 import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
 import {
@@ -49,7 +49,7 @@ console.log('panByPx(+100)    ', panByPx(viewport, 100, 800, trace.durationUs))
 const firstRowY = DEFAULT_METRICS.rulerHeight + DEFAULT_METRICS.paddingTop + 4
 console.log(
   '\nhitTest(第一行长条上) ',
-  // 最后一个参数是 scrollTop：y 是视口坐标，没滚动就是 0
+
   hitTest({ x: 20, y: firstRowY }, rows, trace, viewport, DEFAULT_METRICS, 800, 0),
 )
 

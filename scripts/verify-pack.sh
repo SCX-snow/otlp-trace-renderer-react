@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# 发布前的装机验证：把 `pnpm pack` 出来的真实 tarball 装进空 Vite 项目，
-# React 18 / 19 各一次，验证三件事：
-#   1. 三个子路径（`.` / `headless` / `adapters/otlp`）都能 import、typecheck、build
-#   2. 只 import headless 时 tree-shaking 生效（产物里没有 React，也没有 i18n 文案）
-#   3. Node 里直接 import 三个子路径能跑（证明 ESM 解析与「挂载才碰 window」成立）
-#
-# 用法：bash scripts/verify-pack.sh [18 19]
-# 需要网络（装 react / react-dom / vite / typescript），约 2 分钟。
-# 产物留在 .verify-pack/（gitignore 已忽略），失败时进去看现场。
+
+
+
+
+
+
+
+
+
 
 set -euo pipefail
 
@@ -16,7 +16,7 @@ WORK="${VERIFY_PACK_DIR:-$ROOT/.verify-pack}"
 NPM_CACHE="$WORK/npm-cache"
 if [ $# -gt 0 ]; then REACT_MAJORS=("$@"); else REACT_MAJORS=(18 19); fi
 
-# 只 import flattenRows + normalizeOtlpTrace 的产物上限（实测 ~3.6 kB gzip）
+
 HEADLESS_MAX_GZIP=$((8 * 1024))
 
 step() { printf '\n\033[1m== %s\033[0m\n' "$1"; }
@@ -102,7 +102,7 @@ EOF
 </html>
 EOF
 
-  # 三个子路径各用一次（含 type-only import，用来验证 .d.ts 解析）
+
   cat > "$dir/src/main.tsx" <<'EOF'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'

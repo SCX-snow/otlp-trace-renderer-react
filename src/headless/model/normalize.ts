@@ -2,13 +2,13 @@ import type { NormalizeWarning, RawSpan, RawTrace, SpanData, SpanId, TraceData }
 
 export const UNKNOWN_SERVICE = 'unknown_service'
 
-/**
- * ns → µs 四舍五入。
- *
- * 只接受**差值**：单条 trace 的跨度远小于 2^53 ns（约 104 天），所以 Number(delta) 是精确的。
- * 绝对不能把绝对时间戳先转 number 再相减 —— 1.7e18 超过 Number.MAX_SAFE_INTEGER(9.007e15)，
- * double 粒度约 256ns，会在取整到 µs 后产生随机 1µs 错位。
- */
+
+
+
+
+
+
+
 function nsToUs(deltaNs: bigint): number {
   return Math.round(Number(deltaNs) / 1000)
 }
@@ -27,7 +27,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
   const resources =
     raw.resources.length > 0 ? raw.resources : [{ attributes: {}, serviceName: UNKNOWN_SERVICE }]
 
-  // 1. 去重：同 spanId 只保留第一条
+
   const seen = new Set<SpanId>()
   const unique: RawSpan[] = []
   for (const span of raw.spans) {
@@ -54,7 +54,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     }
   }
 
-  // 2. 解析时间戳（BigInt），找基准
+
   const parsed = unique.map((span) => ({
     raw: span,
     startNs: parseNanos(span.startTimeUnixNano, warnings, span.spanId),
@@ -64,7 +64,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
   let base = parsed[0]!.startNs
   for (const p of parsed) if (p.startNs < base) base = p.startNs
 
-  // 3. 差值落回整数微秒
+
   const spans: SpanData[] = parsed.map((p) => {
     const startUs = nsToUs(p.startNs - base)
     let endUs = nsToUs(p.endNs - base)
@@ -103,7 +103,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     }
   })
 
-  // 4. 排序：start 升序，同值 duration 降序，再同值用 spanId 保证确定性
+
   const order = spans.map((_, i) => i)
   order.sort((a, b) => {
     const sa = spans[a]!
@@ -116,7 +116,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
   const index = new Map<SpanId, number>()
   for (let i = 0; i < sorted.length; i++) index.set(sorted[i]!.spanId, i)
 
-  // 5. 解析父子关系
+
   const n = sorted.length
   const parent = new Int32Array(n).fill(-1)
   for (let i = 0; i < n; i++) {
@@ -134,7 +134,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     parent[i] = p
   }
 
-  // 6. 断环：color 0=未访问 1=当前路径 2=已完成
+
   const color = new Uint8Array(n)
   const path: number[] = []
   for (let i = 0; i < n; i++) {
@@ -158,7 +158,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     for (const node of path) color[node] = 2
   }
 
-  // 7. roots / children。sorted 已按 startUs 升序，所以 children 天然有序
+
   const children: number[][] = Array.from({ length: n }, () => [])
   const roots: number[] = []
   for (let i = 0; i < n; i++) {
@@ -167,7 +167,7 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     else children[p]!.push(i)
   }
 
-  // 8. 时钟偏移只报不改，改数据会让「渲染的和真实的不是一回事」
+
   for (let i = 0; i < n; i++) {
     const p = parent[i]!
     if (p === -1) continue

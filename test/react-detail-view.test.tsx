@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+
 import { StrictMode } from 'react'
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -35,7 +35,7 @@ const trace = toTraceData(spans)
 
 const viewportReadout = () => screen.getByTestId('otlp-toolbar-viewport').textContent
 const nameRows = () => screen.getAllByTitle(/svc · op-/)
-/** 详情面板里有和名称列重名的文字，断言一律限定在面板内 */
+
 const panel = () => within(screen.getByTestId('otlp-span-detail'))
 const styleTags = () => document.querySelectorAll('#otlp-trace-tokens')
 
@@ -171,7 +171,7 @@ describe('受控 / 非受控', () => {
     fireEvent.click(screen.getByRole('button', { name: '放大' }))
     expect(onViewportChange).toHaveBeenCalledTimes(1)
     expect(onViewportChange.mock.calls[0]![0].spanUs).toBeLessThan(500)
-    // 受控：父组件没回传，读数不动
+
     expect(viewportReadout()).toContain('500µs')
   })
 
@@ -212,14 +212,14 @@ describe('受控 / 非受控', () => {
         onCollapsedSpanIdsChange={onCollapsedSpanIdsChange}
       />,
     )
-    // 折叠三角在左侧名称列里（点它不选中该行）
+
     fireEvent.click(screen.getByTestId('otlp-toggle-root'))
     expect(onCollapsedSpanIdsChange).toHaveBeenCalledTimes(1)
     expect([...onCollapsedSpanIdsChange.mock.calls[0]![0]]).toEqual(['root'])
-    expect(nameRows()).toHaveLength(4) // 受控为空集合，行数不变
+    expect(nameRows()).toHaveLength(4)
 
     fireEvent.click(nameRows()[1]!)
-    expect(panel().getByText('op-a')).toBeTruthy() // 选中是非受控的，照样生效
+    expect(panel().getByText('op-a')).toBeTruthy()
   })
 
   it('受控期间发生的交互会写进内部 state，切回非受控后仍然保留', () => {
@@ -227,10 +227,10 @@ describe('受控 / 非受控', () => {
       <TraceDetailView trace={trace} selectedSpanId={null} onSelectedSpanIdChange={() => {}} />,
     )
     fireEvent.click(nameRows()[1]!)
-    // 受控值是 null，面板还是空的
+
     expect(panel().getByText(/点时间轴上的长条/)).toBeTruthy()
 
-    // 撤掉受控：内部 state 里记着刚才那次交互的结果
+
     rerender(<TraceDetailView trace={trace} />)
     expect(panel().getByText('op-a')).toBeTruthy()
   })
@@ -298,7 +298,7 @@ describe('扩展点', () => {
       <TraceDetailView trace={trace} servicePalette={[magenta]} defaultSelectedSpanId={null} />,
     )
 
-    // 画布上所有长条都应该用这个色板（只有一个 service 名，不会被去重逻辑换掉）
+
     const barFills = ctx.ops.filter((op: CtxOp) => op.op === 'fillRect' && op.fillStyle === magenta)
     expect(barFills.length).toBeGreaterThan(0)
   })
@@ -310,8 +310,8 @@ describe('扩展点', () => {
   })
 })
 
-/** 详情区的自定义空间：插槽渲染位置 + 插槽拿得到的动作集 */
-/** a 在文档里是否排在 b 前面（插槽位置断言用） */
+
+
 const before = (a: Node, b: Node) =>
   (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
 
@@ -404,7 +404,7 @@ describe('详情区插槽', () => {
     fireEvent.click(panel().getByRole('button', { name: '跳到 b' }))
 
     expect(onSelectedSpanIdChange).toHaveBeenLastCalledWith('b')
-    // focusSpan 会把祖先展开（不是只改选中），所以 root 从折叠集合里消失
+
     expect(onCollapsedSpanIdsChange).toHaveBeenLastCalledWith(new Set())
   })
 

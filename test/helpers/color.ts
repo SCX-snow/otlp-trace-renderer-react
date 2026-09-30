@@ -1,6 +1,6 @@
-/** 颜色断言用的小工具：色相、红色区间、WCAG 对比度 */
 
-/** hex → 色相（0–360） */
+
+
 export function hueOf(hex: string): number {
   const r = Number.parseInt(hex.slice(1, 3), 16) / 255
   const g = Number.parseInt(hex.slice(3, 5), 16) / 255
@@ -13,7 +13,7 @@ export function hueOf(hex: string): number {
   return (((h * 60) % 360) + 360) % 360
 }
 
-/** 红色区间：error 专用色就在 0° 附近，service 色板不许进来 */
+
 export const inRedBand = (hue: number) => hue < 22 || hue > 340
 
 function luminance(hex: string): number {
@@ -23,7 +23,7 @@ function luminance(hex: string): number {
   return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!
 }
 
-/** WCAG 对比度（1–21） */
+
 export function contrastRatio(a: string, b: string): number {
   const la = luminance(a)
   const lb = luminance(b)

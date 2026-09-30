@@ -1,12 +1,12 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
-/**
- * example 的深色模式现在是「预设 + 页面变量」两半：
- *   - 组件内部主题走库自带的 `DEFAULT_DARK_THEME`（+ `SERVICE_PALETTE_DARK`），不手抄 token；
- *   - `html.dark` 只负责页面自己的 `--app-*`。
- * 这里把两半都钉住：预设没接上、或者页面变量漏一个（深色下留一块白的），都会红。
- */
+
+
+
+
+
+
 const read = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
 
 const html = read('../examples/react-vite/index.html')
@@ -22,7 +22,7 @@ describe('example · 深色模式', () => {
   it('组件深色主题用库的预设，不手抄 token', () => {
     expect(app).toMatch(/theme:\s*DEFAULT_DARK_THEME/)
     expect(app).toContain('SERVICE_PALETTE_DARK')
-    // 页面那份 CSS 不再管组件主题：--otlp-trace-* 只应出现在注释里
+
     expect(cssBlock('html.dark')).not.toContain('--otlp-trace-')
   })
 
@@ -47,5 +47,17 @@ describe('example · 深色模式', () => {
   it('开关切的就是样式表里那个 class', () => {
     expect(app).toContain("classList.toggle('dark'")
     expect(html).toContain('html.dark')
+  })
+
+  it('用文档里的写法拒绝浏览器的自动深色（而不是被它变暗）', () => {
+    expect(html).toMatch(/<meta name="color-scheme" content="only light"\s*\/?>/)
+  })
+
+  it('没明确选过时跟着系统偏好走，运行中切也跟', () => {
+    expect(app).toContain("matchMedia('(prefers-color-scheme: dark)')")
+    expect(app).toContain("media.addEventListener('change', sync)")
+    // 明确选过（开关 / ?theme= / localStorage）就不再听系统
+    expect(app).toMatch(/if \(followSystem\) return/)
+    expect(app).toContain('hasExplicitScheme')
   })
 })

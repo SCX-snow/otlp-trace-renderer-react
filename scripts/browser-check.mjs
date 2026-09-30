@@ -1,24 +1,24 @@
 #!/usr/bin/env node
-/**
- * 真浏览器回归（Playwright + chromium）。
- *
- * 为什么必须有这一层：jsdom 没有布局、没有真滚动，`scrollTop` 相关的坐标 bug（名字列双重偏移、
- * hitTest 少加 scrollTop）在 jsdom 里只能靠「断言 style.top 的数字」间接发现，而真浏览器里
- * 一次点击就能看出来。这里把这几件事变成会自动红的检查：
- *
- *   1. 首屏真画出画布（不是空白帧）
- *   2. 深色预设生效（画布底色 = #0b1220）；开关能切回去
- *   3. **滚动后点击**：鼠标底下那一行 == 被选中的那一行（真鼠标事件）
- *   4. **滚动后悬停**：高亮的行 == 鼠标底下那一行
- *   5. 移动视口 + 触摸 tap 也能选中（Pointer Events 在触屏上的路径）
- *   6. 条目从 12 涨到 5000，下方详情区不被时间轴压扁（flex 布局回归）
- *   7. 滚到「半行」位置时，被 sticky 标尺盖住的那半行条子不会画到标尺上面（绘制顺序回归）
- *   8. 折叠三角长在名称列里、在行文字左边，点它能折叠/展开子树（布局 + 交互）
- *   9. 全程没有 console error / 未捕获异常
- *
- * 用法：pnpm browser:check        （需要先 `npx playwright install chromium`）
- * 本地首次：PLAYWRIGHT_BROWSERS_PATH=.playwright-browsers npx playwright install chromium
- */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 import { execFileSync } from 'node:child_process'
 import { createServer } from 'node:http'
@@ -31,7 +31,7 @@ const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const EXAMPLE_DIST = join(ROOT, 'examples', 'react-vite', 'dist')
 const PORT = Number(process.env.BROWSER_CHECK_PORT ?? 5199)
 
-// 浏览器装在仓库里就优先用它（本仓库的开发环境 HOME 可能只读），否则交给 Playwright 默认缓存
+
 const localBrowsers = join(ROOT, '.playwright-browsers')
 if (process.env.PLAYWRIGHT_BROWSERS_PATH === undefined && existsSync(localBrowsers)) {
   process.env.PLAYWRIGHT_BROWSERS_PATH = localBrowsers
@@ -89,7 +89,7 @@ function serve() {
   return new Promise((resolve) => server.listen(PORT, () => resolve(server)))
 }
 
-/** 画布空区域的真实像素（默认取右下角，那里只有底色） */
+
 const canvasPixel = (page) =>
   page.evaluate(() => {
     const canvas = document.querySelector('canvas')
@@ -98,7 +98,7 @@ const canvasPixel = (page) =>
     return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`
   })
 
-/** 名字列里那些「完整落在视口里」的行：标题 + 视口 y */
+
 const visibleRows = (page) =>
   page.evaluate(() =>
     [...document.querySelectorAll('[data-testid="otlp-name-column"] [title]')]
@@ -165,7 +165,7 @@ async function main() {
         '#4d7c0f',
         '#64748b',
       ]
-      // 扫行区那一条：既要有深色色板的像素，又不能有亮色色板的像素
+
       const data = ctx.getImageData(0, 32, canvas.width, 140).data
       const seen = new Set()
       for (let i = 0; i < data.length; i += 4) {
@@ -251,14 +251,14 @@ async function main() {
   }
 
   step('条目多时详情区不被压扁')
-  // 回归：时间轴那层的 flex-basis 曾是 auto → 基准尺寸 = 内容高度 = 行数 × rowHeight
-  // （5000 行 ≈ 11 万 px），flex 的收缩量按基准尺寸摊派，于是详情面板被一起压扁
-  // （示例配的 300px 只剩 23px，内容只能滚）。jsdom 没有布局引擎，测不出来，所以守在这里。
+
+
+
   const detailHeightFor = async (spans) => {
     await page.goto(`${base}/?spans=${spans}&theme=light`, { waitUntil: 'load' })
     await page.waitForSelector('canvas')
     await page.locator('[role="application"]').focus()
-    await page.keyboard.press('ArrowDown') // 选中一行，详情面板才会撑到配置高度
+    await page.keyboard.press('ArrowDown')
     await page.waitForTimeout(120)
     return page.evaluate(() => {
       const detail = document.querySelector('[data-testid="otlp-span-detail"]')
@@ -279,21 +279,21 @@ async function main() {
   )
 
   step('标尺挡住半行条子')
-  // 回归：标尺带曾经画在条子**之前**，滚到「半行」位置时，被 sticky 标尺盖住的那半行条子会画到标尺上面去。
-  // 先按 F 回到 fit：上一步的 ArrowDown 触发过 focusSpan，会把视口缩到被选中那个 span 的宽度（几 µs），
-  // 那种视口下可见行里一条 bar 都没有，检查就空转了（下面的正控制就是防这个）。
+
+
+
   await page.locator('[role="application"]').focus()
   await page.keyboard.press('f')
   await page.waitForTimeout(150)
   const band = await page.evaluate(async () => {
     const scroller = document.querySelector('[role="application"]')
-    scroller.scrollTop = 611 // 不是行高的整数倍：第一行会被标尺盖掉一半
+    scroller.scrollTop = 611
     for (let i = 0; i < 6; i++) await new Promise((r) => requestAnimationFrame(r))
     await new Promise((r) => setTimeout(r, 150))
     const canvas = document.querySelector('canvas')
     const dpr = canvas.width / parseFloat(canvas.style.width)
     const ctx = canvas.getContext('2d')
-    // 饱和度高的才算条子（网格线/文字/边框都是灰的）
+
     const hasBar = (y) => {
       const row = ctx.getImageData(0, y, canvas.width, 1).data
       for (let x = 0; x < canvas.width; x++) {
@@ -307,7 +307,7 @@ async function main() {
       }
       return false
     }
-    const rulerRows = Math.round(28 * dpr) // DEFAULT_METRICS.rulerHeight
+    const rulerRows = Math.round(28 * dpr)
     let inRuler = 0
     for (let y = 0; y < rulerRows; y++) if (hasBar(y)) inRuler++
     let below = 0
@@ -322,7 +322,7 @@ async function main() {
   check('标尺下方确实有条子（保证上一条不是空画布）', band.below > 5, `${band.below} 行有条子`)
 
   step('折叠三角在名称列里（文字左边）')
-  // 三角必须落在左侧名称列内、且在行文字左边 —— 这是布局量，jsdom 验不了
+
   await page.goto(`${base}/?spans=100&theme=light`, { waitUntil: 'load' })
   await page.waitForSelector('canvas')
   const caret = await page.evaluate(() => {
@@ -365,7 +365,7 @@ async function main() {
         .querySelector('[data-testid="otlp-toggle-s000000"]')
         ?.getAttribute('aria-expanded'),
       rows: document.querySelectorAll('[data-testid="otlp-name-column"] [title]').length,
-      // 折叠后 canvas 上也不该再画被折掉的子行：条子数变少
+
       detail: document.querySelector('[data-testid="otlp-span-detail"]') !== null,
     }))
     check(
@@ -381,6 +381,22 @@ async function main() {
     )
     check('再点一次恢复展开', reopened === caret.rows, `${reopened} 行`)
   }
+
+  step('没明确选过主题时跟随系统偏好（运行中切换也算）')
+  const freshContext = await browser.newContext({ viewport: { width: 1440, height: 820 } })
+  const freshPage = await freshContext.newPage()
+  collectErrors(freshPage, errors)
+  await freshPage.emulateMedia({ colorScheme: 'light' })
+  await freshPage.goto(`${base}/?spans=100`, { waitUntil: 'load' })
+  await freshPage.waitForSelector('canvas')
+  const followLight = await canvasPixel(freshPage)
+  check('系统浅色 → 画布浅色', followLight === '#ffffff', followLight)
+
+  await freshPage.emulateMedia({ colorScheme: 'dark' })
+  await freshPage.waitForTimeout(150)
+  const followDark = await canvasPixel(freshPage)
+  check('运行中把系统切成深色 → 画布当帧跟着变深', followDark === '#0b1220', followDark)
+  await freshContext.close()
 
   step('控制台干净')
   check('没有 console error / 未捕获异常', errors.length === 0, errors.slice(0, 3).join(' | '))

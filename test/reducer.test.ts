@@ -162,7 +162,7 @@ describe('focusSpan', () => {
     expect(focused.selectedSpanId).toBe('b')
     expect(focused.viewport.startUs).toBeLessThanOrEqual(200)
     expect(focused.viewport.startUs + focused.viewport.spanUs).toBeGreaterThanOrEqual(300)
-    expect(effects.scrollToRow).toBe(3) // rows = [root, a, c, b]
+    expect(effects.scrollToRow).toBe(3)
   })
 
   it('祖先被折叠时会先展开，否则目标行根本不存在', () => {

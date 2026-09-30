@@ -17,7 +17,7 @@ const durations = precomputeDurations(trace)
 const serviceColors = buildServiceColors(trace)
 const axis = resolveTimeAxis(1440, DEFAULT_METRICS)
 
-/** 一屏大约能放多少行：1440px 高 / 22px 行高 */
+
 const VIEWPORT_HEIGHT = 800
 
 function makeScene(scrollTop: number): TimelineScene {
@@ -59,7 +59,7 @@ describe('drawTimeline · 5k span', () => {
   it('一帧只画可见的那几十行，不是 5000 行', () => {
     const { ctx, ops } = createFakeCtx()
     drawTimeline(ctx, makeScene(0))
-    // 可见行数 ≈ (800 - 32) / 22 ≈ 35，再加标尺的网格线和标签
+
     const bars = ops.filter(
       (op) => op.op === 'fillRect' && op.args[3] === DEFAULT_METRICS.barHeight,
     )

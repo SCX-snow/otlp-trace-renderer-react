@@ -17,6 +17,6 @@ export type { TraceView, TraceDetailViewApi } from './react/hooks/useTraceViewSt
 
 export { useTraceMessages } from './react/messages-context'
 
-// 深色模式开箱用：预设主题 + 两套 service 色板（色板不走 CSS 变量，由 JS 算，所以单独导出）
+
 export { DEFAULT_DARK_THEME, DEFAULT_THEME } from './headless/theme/tokens'
 export { SERVICE_PALETTE, SERVICE_PALETTE_DARK } from './render/colors'

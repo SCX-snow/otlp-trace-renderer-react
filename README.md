@@ -10,7 +10,7 @@ Requires React 18+.
 
 ```bash
 npm install @slcomplex/otlp-trace-renderer
-# or pnpm add / yarn add
+
 ```
 
 ## Quick start
@@ -18,7 +18,7 @@ npm install @slcomplex/otlp-trace-renderer
 ```tsx
 import { TraceDetailView } from '@slcomplex/otlp-trace-renderer'
 import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
-import otlpJson from './trace.json' // OTLP/JSON: { resourceSpans: [...] }
+import otlpJson from './trace.json'
 
 const trace = normalizeOtlpTrace(otlpJson)
 
@@ -64,9 +64,9 @@ import {
   resolveTimeAxis,
 } from '@slcomplex/otlp-trace-renderer/headless'
 
-const trace = normalizeTrace({ traceId, spans, resources }) // canonical internal model
-const rows = flattenRows(trace, new Set()) // tree → rows (pre-order DFS, explicit stack)
-const axis = resolveTimeAxis(1200, DEFAULT_METRICS) // width available for the time mapping
+const trace = normalizeTrace({ traceId, spans, resources })
+const rows = flattenRows(trace, new Set())
+const axis = resolveTimeAxis(1200, DEFAULT_METRICS)
 ```
 
 ## Main props (`TraceDetailView`)
@@ -188,7 +188,7 @@ pnpm typecheck        # tsc --noEmit
 pnpm lint             # oxlint
 pnpm build            # tsup → dist (ESM + .d.ts)
 
-# release gates (same ones CI runs)
+
 pnpm verify:package   # build + publint + attw + size-limit
 pnpm verify:pack      # install the real tarball into empty projects (React 18 / 19)
 pnpm browser:check    # real-browser regression (Playwright + chromium)

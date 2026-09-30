@@ -28,24 +28,24 @@ import { useTraceViewState, type TraceView } from './hooks/useTraceViewState'
 
 export interface TraceTimelineProps {
   trace: TraceData
-  /** 外部托管的视图状态（TraceDetailView 用）。不传就自己建一份 */
+
   view?: TraceView
-  /** 与 DEFAULT_METRICS 合并 */
+
   metrics?: Partial<Metrics>
-  /** 覆盖 CSS 变量解析出来的颜色 */
+
   theme?: Partial<ThemeTokens>
-  /** service 配色的色板（默认 `SERVICE_PALETTE`；深色底传 `SERVICE_PALETTE_DARK`） */
+
   servicePalette?: readonly string[]
   spanColorMode?: SpanColorMode
-  /** 默认 false：需要 ctrl/meta + 滚轮才缩放，纯滚轮留给页面 */
+
   zoomOnWheel?: boolean
-  /** 刻度标签与详情面板的数字格式。不传就读 navigator.language */
+
   locale?: string
   height?: number | string
-  /** 按 Enter 时触发（TraceDetailView 用它把焦点移到详情面板） */
+
   onActivateDetail?: () => void
 
-  // 只在「没传 view」时生效的受控 props
+
   viewport?: Viewport
   defaultViewport?: Viewport
   onViewportChange?: (viewport: Viewport) => void
@@ -82,13 +82,13 @@ export function TraceTimeline(props: TraceTimelineProps) {
   const size = useElementSize(scrollRef)
   const theme = useThemeTokens(scrollRef, themeProp)
   const [scrollTop, setScrollTop] = useState(0)
-  // 容器窄的时候名称列让位，时间轴至少留 MIN_PLOT_WIDTH
+
   const nameColumnWidth = resolveNameColumnWidth(size.width, metrics.nameColumnWidth)
   const plotWidth = Math.max(0, size.width - nameColumnWidth)
-  // 时间轴的横向尺度：bar 的横坐标只有时间和左右留白，树深度不参与（否则刻度对不上，见 layout/axis.ts）
+
   const axis = useMemo(() => resolveTimeAxis(plotWidth, metrics), [plotWidth, metrics])
 
-  // hooks 不能条件调用，所以内部这份永远建；传了 view 就用外部的，这份自然被忽略
+
   const internalView = useTraceViewState({
     trace,
     metrics,
@@ -114,12 +114,12 @@ export function TraceTimeline(props: TraceTimelineProps) {
   const view = externalView ?? internalView
 
   useIsomorphicLayoutEffect(() => {
-    // 给 reducer 的是**时间映射**宽度（不是画布宽度）：缩放/平移要把像素换算成时间，
-    // 得跟画出来的那套一致，否则拖动时长条跟不上鼠标
+
+
     view.setWidth(axis.timeWidth)
   }, [view, axis])
 
-  // focusSpan 之类的 action 只能靠 effect 落地：reducer 里不许有副作用
+
   useEffect(() => {
     const effects = view.takeEffects()
     if (effects.scrollToRow === undefined) return
@@ -141,7 +141,7 @@ export function TraceTimeline(props: TraceTimelineProps) {
 
   const onKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
-      // 输入法组合中的按键不抢
+
       if (event.nativeEvent.isComposing) return
       const command = resolveKeyCommand(event)
       if (command === null) return
@@ -255,8 +255,8 @@ export function TraceTimeline(props: TraceTimelineProps) {
           onHover={onHover}
           onToggleCollapse={onToggleCollapse}
         />
-        {/* sticky：canvas 钉在视口里，所以它用视口坐标画（减 scrollTop）；
-            名字列在滚动内容里，用内容坐标（不减）—— 两者屏幕位置重合，所以左右天然对齐 */}
+        {
+}
         <div
           style={{
             position: 'sticky',
@@ -301,7 +301,7 @@ export function TraceTimeline(props: TraceTimelineProps) {
   )
 }
 
-/** 只给读屏用：视觉上不可见，但不能 display:none（那样读屏也读不到） */
+
 const visuallyHidden: CSSProperties = {
   position: 'absolute',
   width: 1,

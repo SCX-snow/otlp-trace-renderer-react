@@ -1,18 +1,18 @@
 import type { NormalizeWarning } from '../model/types'
 
-/** 内置语言。`locale` prop 接受任意字符串，未知值回退 en。 */
+
 export type Locale = 'en' | 'zh-CN' | 'zh-TW' | 'ja'
 
-/**
- * 全部可定制文案。
- *
- * 使用者传 `messages={{ zoomIn: '放大一点' }}` 就只改这一条；要加一门内置之外的语言，
- * 就传一整套（缺的 key 自动回退到英文，不会出现 undefined）。
- */
+
+
+
+
+
+
 export interface Messages {
-  /** 时间轴容器的 aria-label */
+
   timelineLabel: string
-  /** 选中变化时的读屏播报（aria-live） */
+
   selectionAnnouncement: string
 
   zoomIn: string
@@ -20,7 +20,7 @@ export interface Messages {
   fit: string
   collapseAll: string
   expandAll: string
-  /** 每行折叠三角的读屏名（状态由 aria-expanded 给） */
+
   toggleSubtree: string
   spansCount: string
   warningsCount: string
@@ -228,7 +228,7 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   ja: '日本語',
 }
 
-/** `{key}` 占位替换。不做复数/性别规则 —— 这几条文案用不上，引 Intl.MessageFormat 不划算。 */
+
 export function format(template: string, params: Record<string, string | number> = {}): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => {
     const value = params[key]
@@ -241,7 +241,7 @@ function matchLocale(tag: string): Locale | undefined {
   if (lower === 'en' || lower.startsWith('en-')) return 'en'
   if (lower.startsWith('ja')) return 'ja'
   if (lower.startsWith('zh')) {
-    // zh-Hant / zh-TW / zh-HK / zh-MO → 繁體，其余中文按简体
+
     return /hant|tw|hk|mo/.test(lower) ? 'zh-TW' : 'zh-CN'
   }
   return undefined
@@ -252,28 +252,28 @@ function detectLocale(): string {
   return navigator.languages?.[0] ?? navigator.language ?? 'en'
 }
 
-/**
- * `'auto'` / undefined → 读 `navigator.language`；显式值先按内置表匹配；都不中回退 `en`。
- *
- * `navigator` 只在函数体里读：模块顶层读会让 SSR 和 node 单测直接炸。
- */
+
+
+
+
+
 export function resolveLocale(input?: string): Locale {
   const requested = input === undefined || input === '' || input === 'auto' ? detectLocale() : input
   return matchLocale(requested) ?? 'en'
 }
 
-/**
- * 内置字典（按 locale 解析）+ 使用者的覆盖，永远叠在最上层。
- *
- * locale 不认识时用英文打底：使用者传一整套自己的语言就得到自己的语言，
- * 漏掉的 key 回退英文，不会出现 undefined。
- */
+
+
+
+
+
+
 export function resolveMessages(locale?: string, overrides?: Partial<Messages>): Messages {
   const base = MESSAGES[resolveLocale(locale)]
   return overrides === undefined ? base : { ...base, ...overrides }
 }
 
-/** 把归一化告警拼成当前语言的句子 */
+
 export function formatWarning(warning: NormalizeWarning, messages: Messages): string {
   switch (warning.code) {
     case 'parent-not-found':
@@ -311,7 +311,7 @@ export function formatWarning(warning: NormalizeWarning, messages: Messages): st
   }
 }
 
-/** 英文描述，给日志/调试用 —— UI 上要用 formatWarning + 当前语言 */
+
 export function describeWarning(warning: NormalizeWarning): string {
   return formatWarning(warning, MESSAGES.en)
 }

@@ -8,7 +8,7 @@ function pick(o: Record<string, unknown>, camel: string, snake: string): unknown
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
 
-/** 纯 JS 的 base64 → hex，避免依赖 atob（老 node / 各种运行时都有坑） */
+
 export function base64ToHex(input: string): string {
   let bits = 0
   let value = 0
@@ -27,10 +27,10 @@ export function base64ToHex(input: string): string {
   return out
 }
 
-/**
- * OTLP/JSON 里 intValue 是字符串（protojson 把 64 位整数编码成 string）。
- * 超出 Number.MAX_SAFE_INTEGER 时保留字符串 —— 属性保真优先于数值方便。
- */
+
+
+
+
 function parseIntValue(raw: unknown): AttrValue {
   if (typeof raw === 'number') return Number.isSafeInteger(raw) ? raw : String(raw)
   if (typeof raw !== 'string') return null
@@ -38,7 +38,7 @@ function parseIntValue(raw: unknown): AttrValue {
   return Number.isSafeInteger(n) ? n : raw
 }
 
-/** OTLP AnyValue → 归一化属性值，兼容 camelCase 与 snake_case */
+
 export function parseAnyValue(value: unknown): AttrValue {
   if (!isObj(value)) return null
 
@@ -54,7 +54,7 @@ export function parseAnyValue(value: unknown): AttrValue {
   const dbl = pick(value, 'doubleValue', 'double_value')
   if (typeof dbl === 'number') return dbl
 
-  // bytesValue 保留 base64 原文，转成 Uint8Array 只会毁掉结构化克隆和可读性
+
   const bytes = pick(value, 'bytesValue', 'bytes_value')
   if (typeof bytes === 'string') return bytes
 
@@ -78,7 +78,7 @@ export function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : []
 }
 
-/** OTLP 的 attributes 是 [{ key, value: AnyValue }]，拉平成普通对象 */
+
 export function flattenAttributes(value: unknown): Record<string, AttrValue> {
   const out: Record<string, AttrValue> = {}
   for (const kv of asArray(value)) {

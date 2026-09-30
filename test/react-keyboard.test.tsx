@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_METRICS, MIN_PLOT_WIDTH } from '../src/headless/layout/metrics'
@@ -93,7 +93,7 @@ describe('折叠与展开', () => {
     press('ArrowLeft')
     expect(nameRows()).toHaveLength(1)
 
-    press('ArrowLeft') // 幂等：已经折了再按不该展开
+    press('ArrowLeft')
     expect(nameRows()).toHaveLength(1)
 
     press('ArrowRight')
@@ -121,7 +121,7 @@ describe('缩放、平移、重置', () => {
     render(<TraceDetailView trace={trace} />)
     const before = rulerLabels().slice(-5).join()
     press('+')
-    // 非尺寸变化的重绘走 rAF，要等一帧
+
     await waitFor(() => expect(rulerLabels().slice(-5).join()).not.toBe(before))
   })
 

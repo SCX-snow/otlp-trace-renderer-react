@@ -4,7 +4,7 @@
 所以它同时验证了打包产物、exports map 和 `.d.ts` 能不能用。
 
 ```bash
-# 在仓库根目录
+
 pnpm install
 pnpm build          # 示例吃的是 dist，改完库代码要重新 build
 pnpm example        # = pnpm build && vite dev → http://localhost:5174
@@ -16,7 +16,7 @@ pnpm example        # = pnpm build && vite dev → http://localhost:5174
 traceId/spanId 是 hex 或 base64 都能识别。
 
 ```bash
-# 从 Jaeger / OTLP collector 的 HTTP 端点导出一份
+
 curl -s 'http://localhost:4318/v1/traces' > src/trace.json
 ```
 
@@ -62,23 +62,23 @@ curl -s 'http://localhost:4318/v1/traces' > src/trace.json
 工具栏最右边有个开关（`role="switch"` + `aria-checked`）。它的实现故意做得很薄 —— **只切一个 class**：
 
 ```ts
-// App.tsx
+
 document.documentElement.classList.toggle('dark', scheme === 'dark')
 ```
 
 ```tsx
-// App.tsx：组件主题用库自带的深色预设 + 深色 service 色板
+
 {...(dark
   ? { theme: DEFAULT_DARK_THEME, servicePalette: SERVICE_PALETTE_DARK }
   : { servicePalette: SERVICE_PALETTE })}
 ```
 
 ```css
-/* index.html：页面自己的底色 / 边框 / 开关仍走 CSS 变量 */
+
 html.dark {
   --app-bg: #0b1220;
   --app-text: #e2e8f0;
-  /* …页面自己的那些 */
+
 }
 ```
 
@@ -112,7 +112,7 @@ const [selectedSpanId, setSelectedSpanId] = useState<SpanId | null>(null)
 
 <TraceDetailView
   trace={trace}
-  selectedSpanId={selectedSpanId}              // 传了就是受控
+  selectedSpanId={selectedSpanId}
   onSelectedSpanIdChange={setSelectedSpanId}
   renderSpanDetail={(span) => <MyDetail span={span} />}   // 整块换掉默认面板
 />
@@ -158,17 +158,17 @@ const [selectedSpanId, setSelectedSpanId] = useState<SpanId | null>(null)
 ## 换语言 / 自定义文案
 
 ```tsx
-// 1. 用内置语言
+
 <TraceDetailView trace={trace} locale="ja" />
 
-// 2. 只改想改的那几条，其余仍用当前语言
+
 <TraceDetailView trace={trace} locale="zh-CN" messages={{ zoomIn: '放大一点点' }} />
 
-// 3. 加一门内置之外的语言：locale 传任意字符串 + messages 传一整套
-//    （漏掉的 key 自动回退英文，不会出现 undefined）
+
+
 <TraceDetailView trace={trace} locale="ko" messages={korean} />
 
-// 4. 自定义插槽里想拿当前语言的文案：
+
 function MyDetail() {
   const { tagsSection } = useTraceMessages()
   return <div>{tagsSection}</div>

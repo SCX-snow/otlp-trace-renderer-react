@@ -25,7 +25,7 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-/** 真实形状的小 trace：3 service、4 层、1 个 error */
+
 export const Realistic: Story = {
   args: { trace: realisticTrace() },
 }
@@ -34,12 +34,12 @@ export const HundredSpans: Story = {
   args: { trace: syntheticTrace(100) },
 }
 
-/** 规模验收：5k span 下滚动、缩放、折叠都不该掉帧 */
+
 export const FiveThousandSpans: Story = {
   args: { trace: syntheticTrace(5000) },
 }
 
-/** 零长度 span：minBarWidth 兜底，不能消失 */
+
 export const SingleSpan: Story = {
   args: { trace: singleSpanTrace() },
 }
@@ -48,12 +48,12 @@ export const Empty: Story = {
   args: { trace: emptyTrace() },
 }
 
-/**
- * 深色：直接用库自带的预设（theme prop 会变成根节点的内联 CSS 变量，DOM 和 canvas 一起变）。
- *
- * service 色板不走 CSS 变量（颜色是 JS 按 service 名算的），所以深色底要另外传 `SERVICE_PALETTE_DARK`；
- * 只写 `theme` 不传色板的话，长条还是亮色那套（在深底上偏暗）。
- */
+
+
+
+
+
+
 export const DarkTheme: Story = {
   args: {
     trace: realisticTrace(),
@@ -62,7 +62,7 @@ export const DarkTheme: Story = {
   },
 }
 
-/** 受控视口：viewport 传进去就由外部管，缩放只回调不落地 */
+
 export const ControlledViewport: Story = {
   args: { trace: realisticTrace() },
   render: () => {
@@ -78,12 +78,12 @@ export const ControlledViewport: Story = {
   },
 }
 
-/** 内置语言之一：ja */
+
 export const Japanese: Story = {
   args: { trace: realisticTrace(), locale: 'ja', defaultSelectedSpanId: 's000004' },
 }
 
-/** 只覆盖想改的那几条，其余仍用当前语言 */
+
 export const CustomMessages: Story = {
   args: {
     trace: realisticTrace(),
@@ -92,7 +92,7 @@ export const CustomMessages: Story = {
   },
 }
 
-/** 加一门内置之外的语言：locale 传任意字符串 + messages 传一整套 */
+
 export const CustomLocale: Story = {
   args: {
     trace: realisticTrace(),
@@ -109,7 +109,7 @@ export const CustomLocale: Story = {
   },
 }
 
-/** 窄容器：名称列自动让位，时间轴至少留 MIN_PLOT_WIDTH，不出现横向溢出 */
+
 export const NarrowContainer: Story = {
   args: { trace: realisticTrace() },
   decorators: [
@@ -121,10 +121,10 @@ export const NarrowContainer: Story = {
   ],
 }
 
-/**
- * 详情区插槽：标题栏右侧（`renderSpanDetailActions`）+ 内置分区之后（`renderSpanDetailExtra`）。
- * 插槽拿到的第三个参数是 `TraceDetailViewApi`（`focusSpan` 是「跳过去看它」，`select` 只改选中）。
- */
+
+
+
+
 export const DetailSlots: Story = {
   args: {
     trace: realisticTrace(),
@@ -172,7 +172,7 @@ export const DetailSlots: Story = {
   },
 }
 
-/** 扩展点：工具栏和详情面板整体替换 */
+
 export const CustomSlots: Story = {
   args: {
     trace: realisticTrace(),

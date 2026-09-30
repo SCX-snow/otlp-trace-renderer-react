@@ -10,10 +10,10 @@ import { useTraceMessages } from './messages-context'
 export interface SpanNameColumnProps {
   trace: TraceData
   rows: Row[]
-  /** 已折叠的 span；决定三角的朝向（展开 ▾ / 折叠 ▸） */
+
   collapsed: ReadonlySet<SpanId>
   metrics: Metrics
-  /** 容器窄时会小于 metrics.nameColumnWidth，默认用它 */
+
   nameWidth?: number
   scrollTop: number
   height: number
@@ -21,11 +21,11 @@ export interface SpanNameColumnProps {
   hoveredSpanId: SpanId | null
   onSelect: (spanId: SpanId) => void
   onHover: (spanId: SpanId | null) => void
-  /** 点三角（或双击行）切换该节点展开/折叠（叶子节点由 reducer 短路） */
+
   onToggleCollapse?: (spanId: SpanId) => void
 }
 
-/** 三角：CSS 边框拼的实心小三角，不引图标依赖；折叠时转 90° 指向右侧 */
+
 function caretStyle(collapsed: boolean): CSSProperties {
   return {
     width: 0,
@@ -37,12 +37,12 @@ function caretStyle(collapsed: boolean): CSSProperties {
   }
 }
 
-/**
- * 左侧名称列：DOM 虚拟行。
- *
- * 颜色一律走 `var(--otlp-trace-*)`（themeVar 带默认值兜底），这样用户在任意作用域覆盖变量时，
- * 这里和 canvas 会同时变色 —— canvas 读不到 CSS 变量，只能 getComputedStyle。
- */
+
+
+
+
+
+
 export function SpanNameColumn({
   trace,
   rows,
@@ -93,10 +93,10 @@ export function SpanNameColumn({
           position: 'absolute',
           left: 0,
           right: 0,
-          // 内容坐标，**不减 scrollTop**：这一列在滚动容器里，滚动由容器自己负责。
-          // 减了就是双重偏移（滚 240px 行就上移 480px），而且屏幕位置会和 canvas 差一个 scrollTop
-          // —— 表现为「滚动后左侧内容丢失 + 两侧鼠标/选中不一致」。
-          // scrollTop 只用来算可见窗口（computeVisibleRows），不参与定位。
+
+
+
+
           top: origin + index * metrics.rowHeight,
           height: metrics.rowHeight,
           display: 'flex',
@@ -107,7 +107,7 @@ export function SpanNameColumn({
           overflow: 'hidden',
           whiteSpace: 'nowrap',
           cursor: 'pointer',
-          // 与 canvas 同一套语义：选中一档、悬停一档（见 draw-timeline 里同样的三元）
+
           background: isSelected
             ? themeVar('rowSelected')
             : isHovered
@@ -126,8 +126,8 @@ export function SpanNameColumn({
             onMouseLeave={() => onHover(null)}
             title={`${span.serviceName} · ${span.name}`}
           >
-            {/* 折叠三角放在文字左边（树形控件的惯例位置），不再画在 canvas 的长条旁边：
-                它是「树结构」的操作，而 canvas 现在是纯时间轴；叶子留同样宽的空槽保证同级文字对齐 */}
+            {
+}
             <span
               style={{
                 width: metrics.toggleWidth,
@@ -156,7 +156,7 @@ export function SpanNameColumn({
                     color: themeVar('textMuted'),
                     cursor: 'pointer',
                   }}
-                  // 别让点击冒泡到行上（那会连带选中该行），双击同理
+
                   onClick={(event) => {
                     event.stopPropagation()
                     onToggleCollapse?.(span.spanId)

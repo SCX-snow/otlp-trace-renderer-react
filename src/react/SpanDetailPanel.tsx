@@ -10,22 +10,22 @@ import { useResolvedMessages } from './messages-context'
 export interface SpanDetailPanelProps {
   trace: TraceData
   spanId: SpanId | null
-  /** 点 link 时跳转到目标 span（TraceDetailView 接的是 focusSpan） */
+
   onSelectSpan?: (spanId: SpanId) => void
-  /** 完全替换默认内容 */
+
   renderSpanDetail?: (span: SpanData, trace: TraceData) => ReactNode
-  /** 标题栏右侧的自定义内容，渲染在「复制 JSON」左边（跳转按钮之类的落脚点） */
+
   renderActions?: (span: SpanData, trace: TraceData) => ReactNode
-  /** 内置分区（tags / process / events / links）之后的自定义内容 */
+
   renderExtra?: (span: SpanData, trace: TraceData) => ReactNode
-  /** 不传就读上层 Provider 或 navigator.language */
+
   locale?: string
-  /** 只覆盖想改的那几条 */
+
   messages?: Partial<Messages>
   height?: number | string
-  /** 覆盖未选中时的提示语，默认取 messages.emptyHint */
+
   emptyHint?: string
-  /** service 色点的色板（默认 `SERVICE_PALETTE`；深色底传 `SERVICE_PALETTE_DARK`） */
+
   servicePalette?: readonly string[]
   className?: string
   style?: CSSProperties
@@ -45,12 +45,12 @@ const linkButtonStyle: CSSProperties = {
   fontSize: 12,
 }
 
-/**
- * 详情面板。
- *
- * `ref` 指向最外层，`tabIndex={-1}` 是为了让时间轴上按 Enter 时能把焦点移进来
- * （键盘用户接着就能用 Tab 在 tags / link 之间走）。
- */
+
+
+
+
+
+
 export const SpanDetailPanel = forwardRef<HTMLDivElement, SpanDetailPanelProps>(
   function SpanDetailPanel(
     {
@@ -79,10 +79,10 @@ export const SpanDetailPanel = forwardRef<HTMLDivElement, SpanDetailPanelProps>(
     )
 
     const wrapperStyle: CSSProperties = {
-      // 空态不给固定高度：占着 240px 空白看着像坏了
+
       height: span === null ? undefined : height,
-      // 配置了高度就一定是这个高度：默认的 flex-shrink: 1 会在父容器装不下时把它压扁
-      // （行数一多、时间轴又占满时尤其明显）。装不下应该由父容器滚动，而不是压缩详情区
+
+
       flexShrink: 0,
       overflow: 'auto',
       padding: '10px 12px',

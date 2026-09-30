@@ -25,14 +25,14 @@ export interface TimelineCanvasProps {
   metrics: Metrics
   theme: ThemeTokens
   width: number
-  /** 时间轴横向几何（时间映射宽度 + 生效缩进），绘制与命中都用它 */
+
   axis: TimeAxis
   height: number
   scrollTop: number
   selectedSpanId: SpanId | null
   hoveredSpanId: SpanId | null
   spanColorMode: SpanColorMode
-  /** 刻度标签的数字格式 */
+
   locale?: string
   durations: Float64Array
   serviceColors: ReadonlyMap<string, string>
@@ -46,7 +46,7 @@ function localPoint(element: HTMLElement, clientX: number, clientY: number) {
   return { x: clientX - rect.left, y: clientY - rect.top }
 }
 
-/** 判定「点击」而不是「拖拽」的位移阈值 */
+
 const CLICK_SLOP_PX = 3
 const WHEEL_ZOOM_STEP = 1.15
 
@@ -115,16 +115,16 @@ export function TimelineCanvas(props: TimelineCanvasProps) {
       durations,
       serviceColors,
     ],
-    // 主题变化当帧同步重画：晚一帧就是深色模式下的白闪（headless 截图必拍到）
+
     [theme],
   )
 
-  // React 的 onWheel 是被动监听，preventDefault 会被忽略，只能手动挂
+
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
     const onWheel = (event: WheelEvent) => {
-      if (!zoomOnWheel && !event.ctrlKey && !event.metaKey) return // 不加修饰键就让页面正常滚
+      if (!zoomOnWheel && !event.ctrlKey && !event.metaKey) return
       event.preventDefault()
       const rect = canvas.getBoundingClientRect()
       onAction({
@@ -177,10 +177,10 @@ export function TimelineCanvas(props: TimelineCanvasProps) {
     }
   }
 
-  /**
-   * 双击任意一行切换展开/折叠（叶子节点由 reducer 短路，不会把 id 写进 collapsed）。
-   * 三角上的单击已经会 toggle，这里不再区分 zone：两种入口的最终状态一致。
-   */
+
+
+
+
   const onDoubleClick = (event: ReactMouseEvent<HTMLCanvasElement>) => {
     const hit = hitAt(localPoint(event.currentTarget, event.clientX, event.clientY))
     if (hit.type === 'row') {

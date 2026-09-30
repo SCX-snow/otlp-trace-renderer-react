@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MESSAGES } from '../src/headless/i18n/messages'
@@ -20,7 +20,7 @@ const rulerLabels = () =>
   shims.ctx.ops.filter((op) => op.op === 'fillText').map((op) => op.text ?? '')
 
 beforeEach(() => {
-  // 环境语言 zh-CN：验证「不传 locale 时读 navigator」
+
   shims = installDomShims(900, 400, 'zh-CN')
 })
 
@@ -56,7 +56,7 @@ describe('locale prop', () => {
   })
 
   it('locale 也影响 canvas 刻度里的数字格式', () => {
-    // 用一条 100ms 的 trace：中间刻度会落在 20.4ms 这种带小数的位置
+
     const longTrace = toTraceData([rawSpan('root', 0, 100_000)])
     render(<TraceDetailView trace={longTrace} locale="de-DE" />)
     expect(rulerLabels().some((label) => label.includes(','))).toBe(true)
@@ -87,7 +87,7 @@ describe('messages 覆盖', () => {
     )
     expect(screen.getByRole('button', { name: '확대' })).toBeTruthy()
     expect(screen.getByRole('button', { name: '축소' })).toBeTruthy()
-    // 没给的 key 回退英文，而不是 undefined
+
     expect(screen.getByRole('button', { name: MESSAGES.en.fit })).toBeTruthy()
   })
 

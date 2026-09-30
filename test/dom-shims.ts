@@ -5,10 +5,10 @@ export interface DomShims {
   ctx: ReturnType<typeof createFakeCtx>
 }
 
-/**
- * jsdom 没有布局引擎、没有 canvas、没有 ResizeObserver、没有 matchMedia。
- * 这几样都得手工搭起来，否则组件在 jsdom 里永远拿到 0×0 尺寸，什么都渲染不出来。
- */
+
+
+
+
 export function installDomShims(width = 900, height = 400, language = 'en-US'): DomShims {
   const ctx = createFakeCtx()
 
@@ -20,7 +20,7 @@ export function installDomShims(width = 900, height = 400, language = 'en-US'): 
     configurable: true,
     get: () => height,
   })
-  // jsdom 没有布局引擎，canvas 的尺寸只能从内联 style 里推（组件就是这么设的）
+
   Object.defineProperty(HTMLCanvasElement.prototype, 'clientWidth', {
     configurable: true,
     get(this: HTMLCanvasElement) {
@@ -61,7 +61,7 @@ export function installDomShims(width = 900, height = 400, language = 'en-US'): 
     disconnect() {}
   } as unknown as typeof ResizeObserver
 
-  // navigator.languages 优先于 navigator.language，两个都要盖掉，否则读出来还是 en-US
+
   Object.defineProperty(window.navigator, 'language', { configurable: true, value: language })
   Object.defineProperty(window.navigator, 'languages', { configurable: true, value: [language] })
   vi.stubGlobal('matchMedia', (query: string) => ({
@@ -75,7 +75,7 @@ export function installDomShims(width = 900, height = 400, language = 'en-US'): 
     dispatchEvent: () => false,
   }))
 
-  // 让 rAF 走 setTimeout，测试里可以用 waitFor 等它
+
   vi.stubGlobal(
     'requestAnimationFrame',
     (callback: FrameRequestCallback) =>

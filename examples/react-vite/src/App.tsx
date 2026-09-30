@@ -18,14 +18,14 @@ import {
 } from '@slcomplex/otlp-trace-renderer/headless'
 import rawOtlp from './trace.json'
 
-// 换成你自己的数据：直接覆盖 src/trace.json（OTLP/JSON，hex 或 base64 编码的 id 都认）
+
 const realTrace = normalizeOtlpTrace(rawOtlp)
 
 const BASE_NS = 1_700_000_000_000_000_000n
 const ns = (us: number) => (BASE_NS + BigInt(us) * 1000n).toString()
 const pad = (i: number) => `s${String(i).padStart(6, '0')}`
 
-/** 就地造一条二叉树，用来验证规模（100 / 5000 行）下的滚动与缩放手感 */
+
 function syntheticTrace(count: number): TraceData {
   const services = ['api-gateway', 'order-service', 'payment-service', 'search', 'inventory']
   const resources = services.map((serviceName) => ({
@@ -59,7 +59,7 @@ const DATASETS = [
   { label: '5000', build: () => syntheticTrace(5000) },
 ]
 
-/** ?spans=5000 直接进大数据集，省得每次手点 */
+
 const initialDataset = () => {
   const wanted = Number(new URLSearchParams(location.search).get('spans'))
   if (!Number.isFinite(wanted)) return 0
@@ -67,7 +67,7 @@ const initialDataset = () => {
   return index === -1 ? 0 : index
 }
 
-/** 内置四种语言。要加自己的语言：locale 传任意字符串 + messages 传一整套 */
+
 const LOCALES = Object.keys(LOCALE_LABELS) as Locale[]
 
 const switchButton = (active: boolean) => ({
@@ -83,9 +83,9 @@ const switchButton = (active: boolean) => ({
 
 const separator = { width: 1, background: 'var(--app-border)', margin: '0 4px' }
 
-// ——— 详情区插槽示例 ———
-// 库本身不预设任何按钮，这几个按钮只是演示「插槽里能拿到什么」：
-// 标题栏（renderSpanDetailActions）放跳转动作，分区之后（renderSpanDetailExtra）放自定义内容。
+
+
+
 
 const slotButton: CSSProperties = {
   fontSize: 12,
@@ -113,7 +113,7 @@ const childIdsOf = (trace: TraceData, spanId: string): string[] => {
   return (trace.children[index] ?? []).map((childIndex) => trace.spans[childIndex]!.spanId)
 }
 
-/** 标题栏右侧：跳到父 span（宿内跳转）+ 跳到外部系统（换 tab） */
+
 const detailActions = (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => {
   const parent = span.parentSpanId === null ? null : spanById(trace, span.parentSpanId)
   return (
@@ -139,7 +139,7 @@ const detailActions = (span: SpanData, trace: TraceData, api: TraceDetailViewApi
   )
 }
 
-/** 内置分区之后：列出子 span，点一下就 focusSpan 跳过去 */
+
 const detailExtra = (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => {
   const childIds = childIdsOf(trace, span.spanId)
   return (
@@ -172,9 +172,19 @@ type ColorScheme = 'light' | 'dark'
 
 const SCHEME_STORAGE_KEY = 'otlp-example-theme'
 
-/** index.html 里的首帧脚本已经算好初始明暗（避免白闪），这里只读结果，不再重复那套优先级 */
+
 const initialScheme = (): ColorScheme =>
   document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+
+
+const hasExplicitScheme = (): boolean => {
+  if (new URLSearchParams(location.search).has('theme')) return true
+  try {
+    return localStorage.getItem(SCHEME_STORAGE_KEY) !== null
+  } catch {
+    return false
+  }
+}
 
 const switchTrack: CSSProperties = {
   position: 'relative',
@@ -204,24 +214,37 @@ export function App() {
     () => new URLSearchParams(location.search).get('locale') ?? 'zh-CN',
   )
   const [scheme, setScheme] = useState<ColorScheme>(initialScheme)
+  const [followSystem, setFollowSystem] = useState(() => !hasExplicitScheme())
   const trace = useMemo(() => DATASETS[dataset]!.build(), [dataset])
-  // ?span=<spanId> 预选中一条，方便截图/复现
+
   const preselected = new URLSearchParams(location.search).get('span')
 
-  // 切一个 class，页面和 canvas 一起变色：库的 useThemeTokens 正监听 documentElement 的 class
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', scheme === 'dark')
+    if (followSystem) return
     try {
       localStorage.setItem(SCHEME_STORAGE_KEY, scheme)
     } catch {
       // 隐私模式下写 localStorage 会抛，忽略即可
     }
-  }, [scheme])
+  }, [scheme, followSystem])
+
+
+  useEffect(() => {
+    if (!followSystem) return
+    const media = window.matchMedia('(prefers-color-scheme: dark)')
+    const sync = () => setScheme(media.matches ? 'dark' : 'light')
+    sync()
+    media.addEventListener('change', sync)
+    return () => media.removeEventListener('change', sync)
+  }, [followSystem])
 
   const dark = scheme === 'dark'
 
-  /** ?theme= 是调试/截图用的；用户自己切过一次就以手动为准，别让刷新又跳回去 */
+
   const toggleScheme = () => {
+    setFollowSystem(false)
     setScheme(dark ? 'light' : 'dark')
     const url = new URL(location.href)
     if (url.searchParams.has('theme')) {
@@ -235,18 +258,18 @@ export function App() {
       trace={trace}
       locale={locale}
       zoomOnWheel={false}
-      // 深色 = 库自带的预设 + 深色 service 色板（色板不走 CSS 变量，由 JS 算，所以要单独传）
+
       {...(dark
         ? { theme: DEFAULT_DARK_THEME, servicePalette: SERVICE_PALETTE_DARK }
         : { servicePalette: SERVICE_PALETTE })}
-      // 示例：面板给高一点，好看到 renderSpanDetailExtra 里的子 span 按钮
+
       detailPanelHeight={300}
       style={{ height: '100vh' }}
       {...(preselected === null ? {} : { defaultSelectedSpanId: preselected })}
-      // 详情区插槽：标题栏按钮 + 分区之后的自定义内容（第三个参数就是 api）
+
       renderSpanDetailActions={detailActions}
       renderSpanDetailExtra={detailExtra}
-      // 工具栏、时间轴、详情面板都是内置的；renderToolbar 只在右边加一个数据集切换器
+
       renderToolbar={(view) => (
         <TraceToolbar trace={trace} viewport={view.state.viewport} onAction={view.dispatch}>
           <span style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
@@ -272,7 +295,7 @@ export function App() {
               </button>
             ))}
             <span style={separator} />
-            {/* 深色模式开关：只改 html 上的 class，主题变量在 index.html 里覆盖 */}
+            { }
             <button
               type="button"
               role="switch"

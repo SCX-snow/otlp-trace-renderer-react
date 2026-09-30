@@ -11,11 +11,11 @@ export interface TraceToolbarProps {
   trace: TraceData
   viewport: Viewport
   onAction: (action: Action) => void
-  /** 不传就读上层 Provider 或 navigator.language */
+
   locale?: string
-  /** 只覆盖想改的那几条 */
+
   messages?: Partial<Messages>
-  /** 右侧追加内容 */
+
   children?: ReactNode
   className?: string
   style?: CSSProperties
