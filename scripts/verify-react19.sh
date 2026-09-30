@@ -21,7 +21,8 @@ die() { printf '\033[31mFAIL: %s\033[0m\n' "$1" >&2; exit 1; }
 step "准备空目录（React $REACT_VERSION）"
 rm -rf "$WORK"
 mkdir -p "$WORK/examples/react-vite/src"
-cp -r "$ROOT/src" "$ROOT/test" "$ROOT/stories" "$ROOT/tsconfig.json" "$WORK/"
+
+cp -r "$ROOT/src" "$ROOT/test" "$ROOT/stories" "$ROOT/tsconfig.json" "$ROOT/vitest.config.ts" "$WORK/"
 
 cp "$ROOT/examples/react-vite/index.html" "$WORK/examples/react-vite/"
 cp "$ROOT/examples/react-vite/src/App.tsx" "$WORK/examples/react-vite/src/"
