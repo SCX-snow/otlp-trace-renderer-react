@@ -1,6 +1,6 @@
 {
   "name": "@slcomplex/otlp-trace-renderer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Jaeger-style OTLP trace timeline for React. Headless core + canvas renderer.",
   "keywords": [
     "otlp",
