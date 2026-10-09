@@ -1,4 +1,3 @@
-
 import { cleanup, fireEvent, render, screen } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { MESSAGES } from '../src/headless/i18n/messages'
@@ -20,7 +19,6 @@ const rulerLabels = () =>
   shims.ctx.ops.filter((op) => op.op === 'fillText').map((op) => op.text ?? '')
 
 beforeEach(() => {
-
   shims = installDomShims(900, 400, 'zh-CN')
 })
 
@@ -56,7 +54,6 @@ describe('locale prop', () => {
   })
 
   it('locale 也影响 canvas 刻度里的数字格式', () => {
-
     const longTrace = toTraceData([rawSpan('root', 0, 100_000)])
     render(<TraceDetailView trace={longTrace} locale="de-DE" />)
     expect(rulerLabels().some((label) => label.includes(','))).toBe(true)

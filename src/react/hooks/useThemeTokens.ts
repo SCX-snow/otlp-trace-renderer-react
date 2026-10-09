@@ -15,16 +15,6 @@ function sameTokens(a: ThemeTokens, b: ThemeTokens): boolean {
   return true
 }
 
-
-
-
-
-
-
-
-
-
-
 export function useThemeTokens(
   ref: { readonly current: HTMLElement | null },
   overrides?: Partial<ThemeTokens>,
@@ -48,7 +38,6 @@ export function useThemeTokens(
     if (typeof window === 'undefined') return
     const media = window.matchMedia('(prefers-color-scheme: dark)')
     media.addEventListener('change', resolve)
-
 
     const observer = new MutationObserver(resolve)
     const options: MutationObserverInit = {

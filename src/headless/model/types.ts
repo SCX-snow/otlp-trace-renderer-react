@@ -51,12 +51,6 @@ export interface ResourceData {
 
 export type NormalizeWarningCode = NormalizeWarning['code']
 
-
-
-
-
-
-
 export type NormalizeWarning =
   | { code: 'parent-not-found'; spanId: SpanId; parentSpanId: SpanId }
   | {
@@ -99,7 +93,6 @@ export interface TraceData {
   index: Map<SpanId, number>
   warnings: NormalizeWarning[]
 }
-
 
 export interface RawSpanEvent {
   name: string

@@ -14,7 +14,6 @@ const FORBIDDEN: { pattern: RegExp; reason: string }[] = [
   { pattern: /\bCanvasRenderingContext2D\b/, reason: 'headless 层不得依赖 canvas 类型' },
 ]
 
-
 function tsFiles(dir: string): string[] {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
     const full = join(dir, entry.name)

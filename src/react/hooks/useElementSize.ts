@@ -9,15 +9,6 @@ const useIsomorphicLayoutEffect = typeof window === 'undefined' ? useEffect : us
 
 const EMPTY: ElementSize = { width: 0, height: 0 }
 
-
-
-
-
-
-
-
-
-
 export function useElementSize(ref: { readonly current: HTMLElement | null }): ElementSize {
   const [size, setSize] = useState<ElementSize>(EMPTY)
 

@@ -36,8 +36,6 @@ describe('resolveTimeAxis', () => {
 
 describe('bar 的横坐标只由时间决定（回归：不能按树深度右移）', () => {
   it('同一段时间、不同深度的两行，画在同一个 x 上', () => {
-
-
     const trace = toTraceData([
       rawSpan('root', 0, 1000),
       rawSpan('l1', 0, 1000, 'root'),

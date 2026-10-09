@@ -25,5 +25,11 @@
     "path": "dist/adapters/otlp.js",
     "gzip": true,
     "limit": "6 kB"
+  },
+  {
+    "name": "adapters/tempo",
+    "path": "dist/adapters/tempo.js",
+    "gzip": true,
+    "limit": "6 kB"
   }
 ]

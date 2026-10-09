@@ -1,4 +1,3 @@
-
 import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_METRICS, MIN_PLOT_WIDTH } from '../src/headless/layout/metrics'
@@ -36,6 +35,25 @@ afterEach(() => {
   vi.unstubAllGlobals()
 })
 
+const tallTrace = toTraceData([
+  rawSpan('root', 0, 10_000),
+  ...Array.from({ length: 40 }, (_, i) => rawSpan(`s${i}`, i * 10, i * 10 + 5, 'root')),
+])
+
+describe('方向键 · 纵向滚动跟随', () => {
+  it('↓ 选到可视区外时把选中行滚进视野（回归：不跟随 = 选中项跑到屏幕外）', () => {
+    render(<TraceDetailView trace={tallTrace} />)
+    const scroller = timeline()
+
+    for (let i = 0; i < 20; i++) press('ArrowDown')
+    const afterTwenty = scroller.scrollTop
+    expect(afterTwenty).toBeGreaterThan(0)
+
+    for (let i = 0; i < 10; i++) press('ArrowDown')
+    expect(scroller.scrollTop).toBeGreaterThan(afterTwenty)
+  })
+})
+
 describe('可聚焦与语义', () => {
   it('时间轴容器可聚焦，带 role 与 aria-label', () => {
     render(<TraceDetailView trace={trace} />)
@@ -51,6 +69,18 @@ describe('可聚焦与语义', () => {
     press('ArrowDown')
     expect(announce()).toContain('已选中 op-root')
     expect(announce()).toContain('时长 1ms')
+  })
+
+  it('输入法组合中的按键直接放行（回归：组合中按 ↓ 不该选行）', () => {
+    const { unmount } = render(<TraceDetailView trace={trace} />)
+    fireEvent.keyDown(timeline(), { key: 'ArrowDown', isComposing: true })
+    expect(announce()).toBe('')
+    expect(panel().textContent).not.toContain('op-root')
+    unmount()
+
+    render(<TraceDetailView trace={trace} />)
+    press('ArrowDown')
+    expect(announce()).toContain('已选中 op-root')
   })
 })
 

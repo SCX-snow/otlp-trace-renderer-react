@@ -17,7 +17,6 @@ const durations = precomputeDurations(trace)
 const serviceColors = buildServiceColors(trace)
 const axis = resolveTimeAxis(1440, DEFAULT_METRICS)
 
-
 const VIEWPORT_HEIGHT = 800
 
 function makeScene(scrollTop: number): TimelineScene {

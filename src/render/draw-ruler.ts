@@ -3,16 +3,10 @@ import type { Viewport } from '../headless/layout/viewport'
 import type { TimelineScene } from './scene'
 
 export interface Tick {
-
   x: number
   timeUs: number
   label: string
 }
-
-
-
-
-
 
 const LABEL_GAP = 3
 
@@ -37,7 +31,6 @@ export function computeTicks(
   return ticks
 }
 
-
 function tickXs(scene: TimelineScene): { ticks: Tick[]; x: (tick: Tick) => number } {
   const ticks = computeTicks(
     scene.viewport,
@@ -47,9 +40,6 @@ function tickXs(scene: TimelineScene): { ticks: Tick[]; x: (tick: Tick) => numbe
   )
   return { ticks, x: (tick) => scene.metrics.paddingX + tick.x }
 }
-
-
-
 
 export function drawGrid(ctx: CanvasRenderingContext2D, scene: TimelineScene): void {
   const { theme, width, height } = scene
@@ -62,16 +52,9 @@ export function drawGrid(ctx: CanvasRenderingContext2D, scene: TimelineScene): v
   }
 }
 
-
-
-
-
-
-
 export function drawRuler(ctx: CanvasRenderingContext2D, scene: TimelineScene): void {
   const { metrics, theme, width } = scene
   const { ticks, x } = tickXs(scene)
-
 
   ctx.fillStyle = theme.bg
   ctx.fillRect(0, 0, width, Math.max(metrics.rulerHeight - 1, 0))
@@ -85,7 +68,6 @@ export function drawRuler(ctx: CanvasRenderingContext2D, scene: TimelineScene): 
   for (const tick of ticks) {
     const px = x(tick)
     const labelWidth = ctx.measureText(tick.label).width
-
 
     const alignRight = px + LABEL_GAP + labelWidth > width
     const anchor = alignRight ? px - LABEL_GAP : px + LABEL_GAP

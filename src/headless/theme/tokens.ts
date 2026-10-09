@@ -1,4 +1,3 @@
-
 export const TOKENS = {
   bg: '--otlp-trace-bg',
   rowBgAlt: '--otlp-trace-row-bg-alt',
@@ -36,18 +35,6 @@ export const DEFAULT_THEME: ThemeTokens = {
   fontFamily: 'ui-sans-serif, system-ui, -apple-system, sans-serif',
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 export const DEFAULT_DARK_THEME: ThemeTokens = {
   bg: '#0b1220',
   rowBgAlt: '#101a2c',
@@ -64,12 +51,6 @@ export const DEFAULT_DARK_THEME: ThemeTokens = {
   focusRing: '#60a5fa',
   fontFamily: DEFAULT_THEME.fontFamily,
 }
-
-
-
-
-
-
 
 export function themeVar(token: ThemeToken): string {
   return `var(${TOKENS[token]}, ${DEFAULT_THEME[token]})`

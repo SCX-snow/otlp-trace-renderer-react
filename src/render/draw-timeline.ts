@@ -5,7 +5,6 @@ import { spanBarColor } from './colors'
 import { drawGrid, drawRuler } from './draw-ruler'
 import { rowOrigin, type TimelineScene } from './scene'
 
-
 export function computeVisibleRows(
   rows: Row[],
   metrics: Metrics,
@@ -17,12 +16,6 @@ export function computeVisibleRows(
   const end = Math.min(rows.length, Math.ceil((scrollTop + height - origin) / metrics.rowHeight))
   return { start, end: Math.max(start, end) }
 }
-
-
-
-
-
-
 
 export function drawTimeline(ctx: CanvasRenderingContext2D, scene: TimelineScene): void {
   const { trace, rows, metrics, theme, viewport, scrollTop, width, height } = scene
@@ -38,8 +31,6 @@ export function drawTimeline(ctx: CanvasRenderingContext2D, scene: TimelineScene
     const isSelected = span.spanId === scene.selectedSpanId
     const isHovered = span.spanId === scene.hoveredSpanId
     if (!isSelected && !isHovered) continue
-
-
 
     ctx.fillStyle = isSelected ? theme.rowSelected : theme.rowHover
     ctx.fillRect(0, origin + i * metrics.rowHeight - scrollTop, width, metrics.rowHeight)
@@ -73,8 +64,6 @@ export function drawTimeline(ctx: CanvasRenderingContext2D, scene: TimelineScene
       ctx.strokeRect(left - 1, barTop - 1, barWidth + 2, metrics.barHeight + 2)
     }
   }
-
-
 
   drawRuler(ctx, scene)
 

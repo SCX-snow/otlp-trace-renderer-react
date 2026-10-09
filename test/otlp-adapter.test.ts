@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { normalizeOtlpTrace } from '../src/adapters/otlp'
 import { base64ToHex } from '../src/adapters/any-value'
 
-const kv = (key: string, value: object) => ({ key, value })
+const kv = (key: string, value: unknown) => ({ key, value })
 
 const load = (name: string): unknown =>
   JSON.parse(readFileSync(new URL(`./fixtures/${name}`, import.meta.url), 'utf8'))
@@ -15,7 +15,7 @@ const TRACE_HEX = '5b8efff798038103d269b633813fc60c'
 const ID_HEX = 'eee19b7ec3c1b174'
 const toB64 = (hex: string) => Buffer.from(hex, 'hex').toString('base64')
 
-
+const wrapSpan = (span: unknown) => ({ resourceSpans: [{ scopeSpans: [{ spans: [span] }] }] })
 function doc(ids: { traceId: string; spanId: string }, snake = false) {
   const spanObj: Record<string, unknown> = {
     [snake ? 'trace_id' : 'traceId']: ids.traceId,
@@ -36,6 +36,17 @@ function doc(ids: { traceId: string; spanId: string }, snake = false) {
 }
 
 describe('normalizeOtlpTrace', () => {
+  it('大写 hex id 也归一化成小写（否则 opts.traceId 查表与 link 匹配都会落空）', () => {
+    const upper = doc({ traceId: TRACE_HEX.toUpperCase(), spanId: ID_HEX.toUpperCase() })
+
+    const trace = normalizeOtlpTrace(upper)
+    expect(trace.traceId).toBe(TRACE_HEX)
+    expect(trace.spans[0]!.spanId).toBe(ID_HEX)
+
+    expect(normalizeOtlpTrace(upper, { traceId: TRACE_HEX }).traceId).toBe(TRACE_HEX)
+    expect(normalizeOtlpTrace(upper, { traceId: TRACE_HEX.toUpperCase() }).traceId).toBe(TRACE_HEX)
+  })
+
   it('解析出正确的模型', () => {
     const trace = normalizeOtlpTrace(small)
     expect(trace.traceId).toBe(TRACE_HEX)
@@ -211,5 +222,91 @@ describe('base64ToHex', () => {
     expect(base64ToHex('AQID')).toBe('010203')
     expect(base64ToHex(toB64(ID_HEX))).toBe(ID_HEX)
     expect(base64ToHex('')).toBe('')
+  })
+
+  it('跳过字母表以外的字符（换行折行的 base64 很常见）', () => {
+    expect(base64ToHex('AQ\nID')).toBe('010203')
+    expect(base64ToHex(' AQID ')).toBe('010203')
+  })
+})
+
+describe('畸形输入只跳过、不崩（防御分支）', () => {
+  const id = { traceId: toB64(TRACE_HEX), spanId: toB64(ID_HEX) }
+
+  it('spanId 不是字符串 → 该条 span 丢掉（不是抛错）', () => {
+    const trace = normalizeOtlpTrace(wrapSpan({ ...id, spanId: 42, name: 'x' }))
+    expect(trace.spans).toEqual([])
+    expect(trace.warnings.map((w) => w.code)).toEqual(['empty-trace'])
+  })
+
+  it('spans / scopeSpans / events / links 里混进非对象 → 只跳过那一条', () => {
+    const trace = normalizeOtlpTrace({
+      resourceSpans: [
+        null,
+        {
+          resource: 'not-an-object',
+          scopeSpans: [
+            null,
+            { spans: [null, 7, { ...id, name: 'ok', events: [null, 1], links: ['x', 2] }] },
+          ],
+        },
+      ],
+    })
+
+    expect(trace.spans.map((s) => s.name)).toEqual(['ok'])
+    expect(trace.spans[0]!.events).toEqual([])
+    expect(trace.spans[0]!.links).toEqual([])
+    expect(trace.resources[0]!.serviceName).toBe('unknown_service')
+  })
+
+  it('缺 resource 的批次也能解（service 回落 unknown_service）', () => {
+    const trace = normalizeOtlpTrace({ resourceSpans: [{ scopeSpans: [{ spans: [id] }] }] })
+    expect(trace.spans).toHaveLength(1)
+    expect(trace.resources[0]!.serviceName).toBe('unknown_service')
+  })
+})
+
+describe('AnyValue 的边角', () => {
+  it('intValue 给 number：安全整数保留数值，超出安全范围降级成字符串', () => {
+    const trace = normalizeOtlpTrace(
+      wrapSpan({
+        traceId: toB64(TRACE_HEX),
+        spanId: toB64(ID_HEX),
+        name: 'op',
+        attributes: [
+          kv('small', { intValue: 200 }),
+          kv('huge', { intValue: 1e300 }),
+          kv('nullish', { intValue: null }),
+        ],
+      }),
+    )
+
+    expect(trace.spans[0]!.attributes['small']).toBe(200)
+    expect(trace.spans[0]!.attributes['huge']).toBe('1e+300')
+    expect(trace.spans[0]!.attributes['nullish']).toBeNull()
+  })
+
+  it('value 不是对象 → null；kvlist / attributes 里的垃圾条目跳过', () => {
+    const trace = normalizeOtlpTrace(
+      wrapSpan({
+        traceId: toB64(TRACE_HEX),
+        spanId: toB64(ID_HEX),
+        name: 'op',
+        attributes: [
+          kv('raw', 'not-an-anyvalue'),
+          kv('nested', {
+            kvlistValue: {
+              values: [null, { key: 42, value: { boolValue: true } }, kv('ok', { intValue: '7' })],
+            },
+          }),
+          null,
+          { value: { stringValue: 'no-key' } },
+          { key: 42, value: { stringValue: 'bad-key' } },
+        ],
+      }),
+    )
+
+    expect(trace.spans[0]!.attributes['raw']).toBeNull()
+    expect(trace.spans[0]!.attributes['nested']).toEqual({ ok: 7 })
   })
 })

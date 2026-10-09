@@ -18,13 +18,11 @@ import {
 } from '@slcomplex/otlp-trace-renderer/headless'
 import rawOtlp from './trace.json'
 
-
 const realTrace = normalizeOtlpTrace(rawOtlp)
 
 const BASE_NS = 1_700_000_000_000_000_000n
 const ns = (us: number) => (BASE_NS + BigInt(us) * 1000n).toString()
 const pad = (i: number) => `s${String(i).padStart(6, '0')}`
-
 
 function syntheticTrace(count: number): TraceData {
   const services = ['api-gateway', 'order-service', 'payment-service', 'search', 'inventory']
@@ -59,14 +57,12 @@ const DATASETS = [
   { label: '5000', build: () => syntheticTrace(5000) },
 ]
 
-
 const initialDataset = () => {
   const wanted = Number(new URLSearchParams(location.search).get('spans'))
   if (!Number.isFinite(wanted)) return 0
   const index = DATASETS.findIndex((item) => item.build().spans.length === wanted)
   return index === -1 ? 0 : index
 }
-
 
 const LOCALES = Object.keys(LOCALE_LABELS) as Locale[]
 
@@ -82,10 +78,6 @@ const switchButton = (active: boolean) => ({
 })
 
 const separator = { width: 1, background: 'var(--app-border)', margin: '0 4px' }
-
-
-
-
 
 const slotButton: CSSProperties = {
   fontSize: 12,
@@ -113,7 +105,6 @@ const childIdsOf = (trace: TraceData, spanId: string): string[] => {
   return (trace.children[index] ?? []).map((childIndex) => trace.spans[childIndex]!.spanId)
 }
 
-
 const detailActions = (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => {
   const parent = span.parentSpanId === null ? null : spanById(trace, span.parentSpanId)
   return (
@@ -138,7 +129,6 @@ const detailActions = (span: SpanData, trace: TraceData, api: TraceDetailViewApi
     </>
   )
 }
-
 
 const detailExtra = (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => {
   const childIds = childIdsOf(trace, span.spanId)
@@ -172,10 +162,8 @@ type ColorScheme = 'light' | 'dark'
 
 const SCHEME_STORAGE_KEY = 'otlp-example-theme'
 
-
 const initialScheme = (): ColorScheme =>
   document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-
 
 const hasExplicitScheme = (): boolean => {
   if (new URLSearchParams(location.search).has('theme')) return true
@@ -219,7 +207,6 @@ export function App() {
 
   const preselected = new URLSearchParams(location.search).get('span')
 
-
   useEffect(() => {
     document.documentElement.classList.toggle('dark', scheme === 'dark')
     if (followSystem) return
@@ -229,7 +216,6 @@ export function App() {
       // 隐私模式下写 localStorage 会抛，忽略即可
     }
   }, [scheme, followSystem])
-
 
   useEffect(() => {
     if (!followSystem) return
@@ -241,7 +227,6 @@ export function App() {
   }, [followSystem])
 
   const dark = scheme === 'dark'
-
 
   const toggleScheme = () => {
     setFollowSystem(false)
@@ -295,7 +280,7 @@ export function App() {
               </button>
             ))}
             <span style={separator} />
-            { }
+            {}
             <button
               type="button"
               role="switch"

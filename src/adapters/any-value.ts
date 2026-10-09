@@ -2,12 +2,11 @@ import type { AttrValue } from '../headless/model/types'
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
-function pick(o: Record<string, unknown>, camel: string, snake: string): unknown {
+export function pick(o: Record<string, unknown>, camel: string, snake: string): unknown {
   return o[camel] !== undefined ? o[camel] : o[snake]
 }
 
 const B64 = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-
 
 export function base64ToHex(input: string): string {
   let bits = 0
@@ -27,17 +26,12 @@ export function base64ToHex(input: string): string {
   return out
 }
 
-
-
-
-
 function parseIntValue(raw: unknown): AttrValue {
   if (typeof raw === 'number') return Number.isSafeInteger(raw) ? raw : String(raw)
   if (typeof raw !== 'string') return null
   const n = Number(raw)
   return Number.isSafeInteger(n) ? n : raw
 }
-
 
 export function parseAnyValue(value: unknown): AttrValue {
   if (!isObj(value)) return null
@@ -53,7 +47,6 @@ export function parseAnyValue(value: unknown): AttrValue {
 
   const dbl = pick(value, 'doubleValue', 'double_value')
   if (typeof dbl === 'number') return dbl
-
 
   const bytes = pick(value, 'bytesValue', 'bytes_value')
   if (typeof bytes === 'string') return bytes
@@ -77,7 +70,6 @@ export function parseAnyValue(value: unknown): AttrValue {
 export function asArray(value: unknown): unknown[] {
   return Array.isArray(value) ? value : []
 }
-
 
 export function flattenAttributes(value: unknown): Record<string, AttrValue> {
   const out: Record<string, AttrValue> = {}

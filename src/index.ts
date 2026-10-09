@@ -17,6 +17,5 @@ export type { TraceView, TraceDetailViewApi } from './react/hooks/useTraceViewSt
 
 export { useTraceMessages } from './react/messages-context'
 
-
 export { DEFAULT_DARK_THEME, DEFAULT_THEME } from './headless/theme/tokens'
 export { SERVICE_PALETTE, SERVICE_PALETTE_DARK } from './render/colors'

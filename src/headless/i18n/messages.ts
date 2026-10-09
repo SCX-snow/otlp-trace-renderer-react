@@ -1,16 +1,8 @@
 import type { NormalizeWarning } from '../model/types'
 
-
 export type Locale = 'en' | 'zh-CN' | 'zh-TW' | 'ja'
 
-
-
-
-
-
-
 export interface Messages {
-
   timelineLabel: string
 
   selectionAnnouncement: string
@@ -228,7 +220,6 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   ja: '日本語',
 }
 
-
 export function format(template: string, params: Record<string, string | number> = {}): string {
   return template.replace(/\{(\w+)\}/g, (match, key: string) => {
     const value = params[key]
@@ -241,7 +232,6 @@ function matchLocale(tag: string): Locale | undefined {
   if (lower === 'en' || lower.startsWith('en-')) return 'en'
   if (lower.startsWith('ja')) return 'ja'
   if (lower.startsWith('zh')) {
-
     return /hant|tw|hk|mo/.test(lower) ? 'zh-TW' : 'zh-CN'
   }
   return undefined
@@ -252,27 +242,15 @@ function detectLocale(): string {
   return navigator.languages?.[0] ?? navigator.language ?? 'en'
 }
 
-
-
-
-
-
 export function resolveLocale(input?: string): Locale {
   const requested = input === undefined || input === '' || input === 'auto' ? detectLocale() : input
   return matchLocale(requested) ?? 'en'
 }
 
-
-
-
-
-
-
 export function resolveMessages(locale?: string, overrides?: Partial<Messages>): Messages {
   const base = MESSAGES[resolveLocale(locale)]
   return overrides === undefined ? base : { ...base, ...overrides }
 }
-
 
 export function formatWarning(warning: NormalizeWarning, messages: Messages): string {
   switch (warning.code) {
@@ -310,7 +288,6 @@ export function formatWarning(warning: NormalizeWarning, messages: Messages): st
       })
   }
 }
-
 
 export function describeWarning(warning: NormalizeWarning): string {
   return formatWarning(warning, MESSAGES.en)

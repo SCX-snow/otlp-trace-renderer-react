@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { durationPercentile } from '../src/headless/interaction/selectors'
 import { DEFAULT_THEME } from '../src/headless/theme/tokens'
 import {
   SERVICE_PALETTE,
@@ -11,6 +12,21 @@ import { hueOf, inRedBand } from './helpers/color'
 import { multiServiceTrace, rawSpan, toTraceData } from './helpers/trace-factory'
 
 const hueFromHsl = (color: string) => Number(/hsl\(([-\d.]+)/.exec(color)![1])
+
+describe('durationPercentile', () => {
+  it('正好等于某个时长时按「≤ 已计入」算（回归：边界用 < 会让分位整体偏小）', () => {
+    const sorted = Float64Array.from([1, 50, 1000])
+    expect(durationPercentile(sorted, 0)).toBe(0)
+    expect(durationPercentile(sorted, 1)).toBeCloseTo(1 / 3, 6)
+    expect(durationPercentile(sorted, 50)).toBeCloseTo(2 / 3, 6)
+    expect(durationPercentile(sorted, 1000)).toBe(1)
+    expect(durationPercentile(sorted, 5000)).toBe(1)
+  })
+
+  it('空数组返回 0，不产生 NaN', () => {
+    expect(durationPercentile(new Float64Array(), 42)).toBe(0)
+  })
+})
 
 describe('serviceColor', () => {
   it('同一个 service 永远同一个颜色', () => {

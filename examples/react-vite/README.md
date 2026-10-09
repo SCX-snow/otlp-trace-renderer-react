@@ -62,7 +62,6 @@ curl -s 'http://localhost:4318/v1/traces' > src/trace.json
 工具栏最右边有个开关（`role="switch"` + `aria-checked`）。它的实现故意做得很薄 —— **只切一个 class**：
 
 ```ts
-
 document.documentElement.classList.toggle('dark', scheme === 'dark')
 ```
 
@@ -74,11 +73,9 @@ document.documentElement.classList.toggle('dark', scheme === 'dark')
 ```
 
 ```css
-
 html.dark {
   --app-bg: #0b1220;
   --app-text: #e2e8f0;
-
 }
 ```
 

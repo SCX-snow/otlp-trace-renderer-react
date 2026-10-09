@@ -25,7 +25,6 @@ const meta = {
 export default meta
 type Story = StoryObj<typeof meta>
 
-
 export const Realistic: Story = {
   args: { trace: realisticTrace() },
 }
@@ -34,11 +33,9 @@ export const HundredSpans: Story = {
   args: { trace: syntheticTrace(100) },
 }
 
-
 export const FiveThousandSpans: Story = {
   args: { trace: syntheticTrace(5000) },
 }
-
 
 export const SingleSpan: Story = {
   args: { trace: singleSpanTrace() },
@@ -48,12 +45,6 @@ export const Empty: Story = {
   args: { trace: emptyTrace() },
 }
 
-
-
-
-
-
-
 export const DarkTheme: Story = {
   args: {
     trace: realisticTrace(),
@@ -61,7 +52,6 @@ export const DarkTheme: Story = {
     servicePalette: SERVICE_PALETTE_DARK,
   },
 }
-
 
 export const ControlledViewport: Story = {
   args: { trace: realisticTrace() },
@@ -78,11 +68,9 @@ export const ControlledViewport: Story = {
   },
 }
 
-
 export const Japanese: Story = {
   args: { trace: realisticTrace(), locale: 'ja', defaultSelectedSpanId: 's000004' },
 }
-
 
 export const CustomMessages: Story = {
   args: {
@@ -91,7 +79,6 @@ export const CustomMessages: Story = {
     messages: { zoomIn: '放大一点点', copyJson: '拷走', tagsSection: '属性（{count}）' },
   },
 }
-
 
 export const CustomLocale: Story = {
   args: {
@@ -109,7 +96,6 @@ export const CustomLocale: Story = {
   },
 }
 
-
 export const NarrowContainer: Story = {
   args: { trace: realisticTrace() },
   decorators: [
@@ -120,10 +106,6 @@ export const NarrowContainer: Story = {
     ),
   ],
 }
-
-
-
-
 
 export const DetailSlots: Story = {
   args: {
@@ -171,7 +153,6 @@ export const DetailSlots: Story = {
     },
   },
 }
-
 
 export const CustomSlots: Story = {
   args: {

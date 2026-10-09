@@ -23,9 +23,7 @@ export interface ReducerCtx {
   width: number
 }
 
-
 export interface ReducerEffects {
-
   scrollToRow?: number
 }
 
@@ -68,7 +66,6 @@ function indexOfSpan(trace: TraceData, spanId: SpanId | null): number {
 function withViewport(state: ViewState, next: Viewport): [ViewState, ReducerEffects] {
   return next === state.viewport ? [state, NO_EFFECTS] : [{ ...state, viewport: next }, NO_EFFECTS]
 }
-
 
 function expandAncestors(state: ViewState, trace: TraceData, spanIndex: number): ViewState | null {
   const next = new Set(state.collapsed)
@@ -113,7 +110,6 @@ export function traceReducer(
       return withViewport(state, panByPx(state.viewport, action.dxPx, ctx.width, durationUs))
 
     case 'panByFraction':
-
       if (ctx.width <= 0) return [state, NO_EFFECTS]
       return withViewport(
         state,
@@ -149,7 +145,6 @@ export function traceReducer(
     }
 
     case 'setCollapsed': {
-
       const spanIndex = indexOfSpan(trace, action.spanId)
       if (spanIndex === -1) return [state, NO_EFFECTS]
       if (!action.collapsed && trace.children[spanIndex]!.length === 0) return [state, NO_EFFECTS]

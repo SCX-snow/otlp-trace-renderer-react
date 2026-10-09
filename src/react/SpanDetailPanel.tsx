@@ -45,12 +45,6 @@ const linkButtonStyle: CSSProperties = {
   fontSize: 12,
 }
 
-
-
-
-
-
-
 export const SpanDetailPanel = forwardRef<HTMLDivElement, SpanDetailPanelProps>(
   function SpanDetailPanel(
     {
@@ -79,9 +73,7 @@ export const SpanDetailPanel = forwardRef<HTMLDivElement, SpanDetailPanelProps>(
     )
 
     const wrapperStyle: CSSProperties = {
-
       height: span === null ? undefined : height,
-
 
       flexShrink: 0,
       overflow: 'auto',

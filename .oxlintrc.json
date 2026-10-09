@@ -20,6 +20,18 @@
           }
         ]
       }
+    },
+    {
+      "files": [
+        "src/render/colors.ts",
+        "src/adapters/otlp.ts",
+        "src/headless/interaction/selectors.ts",
+        "test/i18n.test.ts"
+      ],
+      "rules": {
+        "unicorn/no-array-sort": "off",
+        "unicorn/no-array-reverse": "off"
+      }
     }
   ]
 }

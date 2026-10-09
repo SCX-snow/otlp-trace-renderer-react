@@ -1,0 +1,75 @@
+{
+  "trace": {
+    "resourceSpans": [
+      {
+        "resource": {
+          "attributes": [
+            { "key": "service.name", "value": { "stringValue": "frontend" } },
+            { "key": "deployment.environment", "value": { "stringValue": "prod" } }
+          ]
+        },
+        "scopeSpans": [
+          {
+            "scope": { "name": "@opentelemetry/instrumentation-http", "version": "0.50.0" },
+            "spans": [
+              {
+                "traceId": "W47/95gDgQPSabYzgT/GDA==",
+                "spanId": "7uGbfsPBsXQ=",
+                "name": "HTTP GET /api/orders",
+                "kind": "SPAN_KIND_SERVER",
+                "startTimeUnixNano": "1700000000000000000",
+                "endTimeUnixNano": "1700000000500000000",
+                "attributes": [
+                  { "key": "http.request.method", "value": { "stringValue": "GET" } },
+                  { "key": "http.response.status_code", "value": { "intValue": "500" } }
+                ],
+                "events": [
+                  {
+                    "name": "exception",
+                    "timeUnixNano": "1700000000450000000",
+                    "attributes": [
+                      { "key": "exception.type", "value": { "stringValue": "TimeoutError" } }
+                    ]
+                  }
+                ],
+                "status": { "code": "STATUS_CODE_ERROR", "message": "upstream timeout" }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "resource": {
+          "attributes": [{ "key": "service.name", "value": { "stringValue": "orders" } }]
+        },
+        "scopeSpans": [
+          {
+            "spans": [
+              {
+                "traceId": "W47/95gDgQPSabYzgT/GDA==",
+                "spanId": "qqGbfsPBsRE=",
+                "parentSpanId": "7uGbfsPBsXQ=",
+                "name": "SELECT orders",
+                "kind": "SPAN_KIND_CLIENT",
+                "startTimeUnixNano": "1700000000100000000",
+                "endTimeUnixNano": "1700000000150000000",
+                "attributes": [{ "key": "db.system", "value": { "stringValue": "postgresql" } }]
+              },
+              {
+                "traceId": "W47/95gDgQPSabYzgT/GDA==",
+                "spanId": "u7GbfsPBsiI=",
+                "parentSpanId": "7uGbfsPBsXQ=",
+                "name": "POST /charge",
+                "kind": "SPAN_KIND_CLIENT",
+                "startTimeUnixNano": "1700000000200000000",
+                "endTimeUnixNano": "1700000000420000000",
+                "links": [{ "traceId": "AAAAAAAAAAAAAAAAAAAAAQ==", "spanId": "ERERERERERE=" }]
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "metrics": { "inspectedBytes": "1280000" }
+}

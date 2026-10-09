@@ -5,6 +5,7 @@ export default defineConfig({
     index: 'src/index.ts',
     headless: 'src/headless.ts',
     'adapters/otlp': 'src/adapters/otlp.ts',
+    'adapters/tempo': 'src/adapters/tempo.ts',
   },
   format: ['esm'],
   target: 'es2020', // BigInt 字面量的下限，别再降

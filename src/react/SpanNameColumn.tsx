@@ -25,7 +25,6 @@ export interface SpanNameColumnProps {
   onToggleCollapse?: (spanId: SpanId) => void
 }
 
-
 function caretStyle(collapsed: boolean): CSSProperties {
   return {
     width: 0,
@@ -36,12 +35,6 @@ function caretStyle(collapsed: boolean): CSSProperties {
     transform: collapsed ? 'rotate(-90deg)' : undefined,
   }
 }
-
-
-
-
-
-
 
 export function SpanNameColumn({
   trace,
@@ -94,9 +87,6 @@ export function SpanNameColumn({
           left: 0,
           right: 0,
 
-
-
-
           top: origin + index * metrics.rowHeight,
           height: metrics.rowHeight,
           display: 'flex',
@@ -126,8 +116,7 @@ export function SpanNameColumn({
             onMouseLeave={() => onHover(null)}
             title={`${span.serviceName} · ${span.name}`}
           >
-            {
-}
+            {}
             <span
               style={{
                 width: metrics.toggleWidth,

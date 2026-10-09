@@ -1,7 +1,3 @@
-
-
-
-
 import { readFileSync } from 'node:fs'
 import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
 import {

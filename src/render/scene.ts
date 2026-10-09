@@ -6,7 +6,6 @@ import type { SpanId, TraceData } from '../headless/model/types'
 import type { ThemeTokens } from '../headless/theme/tokens'
 import type { SpanColorMode } from './colors'
 
-
 export type ResolvedTheme = ThemeTokens
 
 export interface TimelineScene {
@@ -32,6 +31,5 @@ export interface TimelineScene {
 
   serviceColors: ReadonlyMap<string, string>
 }
-
 
 export const rowOrigin = (metrics: Metrics) => metrics.rulerHeight + metrics.paddingTop

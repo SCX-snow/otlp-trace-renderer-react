@@ -27,6 +27,17 @@ export function TracePage() {
 }
 ```
 
+Data coming from Grafana Tempo uses a separate subpath. Tempo's `/api/traces/<id>` response wraps the trace in a
+`trace` envelope, and the field names inside come in two generations (≥2.x `resourceSpans` + `scopeSpans`,
+≤1.x `batches` + `instrumentationLibrarySpans`) — the adapter accepts both:
+
+```tsx
+import { normalizeTempoTrace } from '@slcomplex/otlp-trace-renderer/adapters/tempo'
+import tempoJson from './tempo-trace.json'
+
+const trace = normalizeTempoTrace(tempoJson)
+```
+
 Dark mode takes two props: `theme` swaps the background and text colors, `servicePalette` swaps the bar colors:
 
 ```tsx
@@ -160,6 +171,7 @@ explicit collapse button, drag to pan, and `Ctrl`/`Cmd` + wheel (or `zoomOnWheel
 
 - **React 18.3 / 19.3**
 - **ESM only**
+- **TypeScript**: subpaths resolve under `bundler`, `node16` and `node` (node10) `moduleResolution`
 - **Zero runtime dependencies**
 - **Node ≥ 18**
 - **Modern browsers**
@@ -184,6 +196,7 @@ pnpm storybook          # component stories → http://localhost:6006 (13 storie
 pnpm install
 pnpm dev              # playground (vite, uses src directly)
 pnpm test             # vitest (node + jsdom environments)
+pnpm coverage         # coverage report for diagnostics (v8, html in coverage/), not a gate
 pnpm typecheck        # tsc --noEmit
 pnpm lint             # oxlint
 pnpm build            # tsup → dist (ESM + .d.ts)

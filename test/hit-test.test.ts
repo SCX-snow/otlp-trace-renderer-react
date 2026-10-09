@@ -32,7 +32,6 @@ describe('rowAtY', () => {
 })
 
 describe('rowAtY · 滚动后（y 是视口坐标）', () => {
-
   const many = toTraceData(
     Array.from({ length: 10 }, (_, i) => rawSpan(`s${i}`, i * 10, i * 10 + 5)),
   )
@@ -78,7 +77,6 @@ describe('barRange', () => {
   })
 
   it('深处的 span 落在 trace 末尾时，右边缘仍在画布内', () => {
-
     const deep = toTraceData([
       rawSpan('root', 0, 1000),
       rawSpan('l1', 0, 1000, 'root'),

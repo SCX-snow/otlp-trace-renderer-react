@@ -2,13 +2,6 @@ import type { NormalizeWarning, RawSpan, RawTrace, SpanData, SpanId, TraceData }
 
 export const UNKNOWN_SERVICE = 'unknown_service'
 
-
-
-
-
-
-
-
 function nsToUs(deltaNs: bigint): number {
   return Math.round(Number(deltaNs) / 1000)
 }
@@ -26,7 +19,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
   const warnings: NormalizeWarning[] = []
   const resources =
     raw.resources.length > 0 ? raw.resources : [{ attributes: {}, serviceName: UNKNOWN_SERVICE }]
-
 
   const seen = new Set<SpanId>()
   const unique: RawSpan[] = []
@@ -54,7 +46,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     }
   }
 
-
   const parsed = unique.map((span) => ({
     raw: span,
     startNs: parseNanos(span.startTimeUnixNano, warnings, span.spanId),
@@ -63,7 +54,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
 
   let base = parsed[0]!.startNs
   for (const p of parsed) if (p.startNs < base) base = p.startNs
-
 
   const spans: SpanData[] = parsed.map((p) => {
     const startUs = nsToUs(p.startNs - base)
@@ -103,7 +93,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     }
   })
 
-
   const order = spans.map((_, i) => i)
   order.sort((a, b) => {
     const sa = spans[a]!
@@ -115,7 +104,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
   const sorted = order.map((i) => spans[i]!)
   const index = new Map<SpanId, number>()
   for (let i = 0; i < sorted.length; i++) index.set(sorted[i]!.spanId, i)
-
 
   const n = sorted.length
   const parent = new Int32Array(n).fill(-1)
@@ -133,7 +121,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     }
     parent[i] = p
   }
-
 
   const color = new Uint8Array(n)
   const path: number[] = []
@@ -158,7 +145,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     for (const node of path) color[node] = 2
   }
 
-
   const children: number[][] = Array.from({ length: n }, () => [])
   const roots: number[] = []
   for (let i = 0; i < n; i++) {
@@ -166,7 +152,6 @@ export function normalizeTrace(raw: RawTrace): TraceData {
     if (p === -1) roots.push(i)
     else children[p]!.push(i)
   }
-
 
   for (let i = 0; i < n; i++) {
     const p = parent[i]!

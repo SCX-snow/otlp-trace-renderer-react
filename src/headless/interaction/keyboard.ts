@@ -1,8 +1,3 @@
-
-
-
-
-
 export type KeyboardCommand =
   | { type: 'moveSelection'; delta: number }
   | { type: 'setCollapsed'; collapsed: boolean }
@@ -33,7 +28,6 @@ export function resolveKeyCommand(event: KeyLike): KeyboardCommand | null {
     case 'ArrowUp':
       return { type: 'moveSelection', delta: -1 }
     case 'ArrowRight':
-
       return event.shiftKey
         ? { type: 'panByFraction', fraction: PAN_FRACTION }
         : { type: 'setCollapsed', collapsed: false }

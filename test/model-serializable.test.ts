@@ -4,14 +4,6 @@ import type { SpanId } from '../src/headless/model/types'
 import { flattenRows } from '../src/headless/layout/flatten'
 import { at, makeTraceData, rawSpan, toTraceData } from './helpers/trace-factory'
 
-
-
-
-
-
-
-
-
 const serializable = <T>(value: T): T => structuredClone(value)
 
 describe('TraceData · structuredClone 友好', () => {
@@ -34,12 +26,10 @@ describe('TraceData · structuredClone 友好', () => {
     expect(clone.children).toEqual(trace.children)
     expect(clone.roots).toEqual(trace.roots)
 
-
     expect(clone.index).toBeInstanceOf(Map)
     const index = clone.index.get('a' as SpanId)
     expect(index).toBe(trace.index.get('a' as SpanId))
     expect(clone.spans[index!]!.name).toBe('op-a')
-
 
     expect(flattenRows(clone, new Set()).length).toBe(flattenRows(trace, new Set()).length)
   })

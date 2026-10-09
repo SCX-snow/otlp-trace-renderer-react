@@ -8,24 +8,15 @@ import type {
   TraceData,
   TraceId,
 } from '../headless/model/types'
-import { asArray, base64ToHex, flattenAttributes } from './any-value'
+import { asArray, base64ToHex, flattenAttributes, pick } from './any-value'
 
 export interface NormalizeOtlpOptions {
-
   traceId?: TraceId
 }
 
 const isObj = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 
-function pick(obj: Record<string, unknown>, camel: string, snake: string): unknown {
-  return obj[camel] !== undefined ? obj[camel] : obj[snake]
-}
-
 const HEX = /^[0-9a-f]+$/i
-
-
-
-
 
 function toHexId(value: unknown, bytes: number): string {
   if (typeof value !== 'string') return ''
@@ -142,12 +133,6 @@ interface Bucket {
   resources: ResourceData[]
 }
 
-
-
-
-
-
-
 export function normalizeOtlpTrace(json: unknown, opts: NormalizeOtlpOptions = {}): TraceData {
   if (!isObj(json)) throw new TypeError('normalizeOtlpTrace: 期望一个 OTLP JSON 对象')
 
@@ -198,7 +183,6 @@ export function normalizeOtlpTrace(json: unknown, opts: NormalizeOtlpOptions = {
     chosenId = wanted
     chosen = found
   } else {
-
     const entries = [...buckets.entries()].sort(
       (a, b) => b[1].spans.length - a[1].spans.length || (a[0] < b[0] ? -1 : 1),
     )

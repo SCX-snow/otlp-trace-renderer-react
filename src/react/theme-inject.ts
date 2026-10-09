@@ -11,14 +11,6 @@ export function themeToCss(theme: Partial<ThemeTokens>): string {
     .join(';')
 }
 
-
-
-
-
-
-
-
-
 export function acquireThemeDefaults(): () => void {
   if (typeof document === 'undefined') return () => {}
   refCount += 1
@@ -40,7 +32,6 @@ export function acquireThemeDefaults(): () => void {
     }
   }
 }
-
 
 export function themeRefCount(): number {
   return refCount

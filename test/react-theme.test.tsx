@@ -1,4 +1,3 @@
-
 import { cleanup, render, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { TOKENS } from '../src/headless/theme/tokens'
@@ -6,12 +5,6 @@ import { TraceTimeline } from '../src/react/TraceTimeline'
 import type { CtxOp } from './fake-ctx'
 import { installDomShims } from './dom-shims'
 import { rawSpan, toTraceData } from './helpers/trace-factory'
-
-
-
-
-
-
 
 const cssVars: Record<string, string> = {}
 const DARK_BG = '#0b1220'
@@ -44,7 +37,6 @@ const trace = toTraceData([rawSpan('root', 0, 1000), rawSpan('a', 100, 400, 'roo
 const bgFills = (color: string) =>
   ctx.ops.filter((op: CtxOp) => op.op === 'fillRect' && op.fillStyle === color).length
 
-
 const lastFrame = () => {
   let start = 0
   ctx.ops.forEach((op: CtxOp, index: number) => {
@@ -64,13 +56,6 @@ describe('主题解析（CSS 变量 → canvas）', () => {
     expect(bgFills(DARK_BG)).toBe(0)
   })
 
-
-
-
-
-
-
-
   it('rAF 不可用时，首帧渲染完最后一帧就已是深色（不许白闪一帧）', async () => {
     vi.stubGlobal('requestAnimationFrame', () => 0)
     vi.stubGlobal('cancelAnimationFrame', () => {})
@@ -85,7 +70,6 @@ describe('主题解析（CSS 变量 → canvas）', () => {
   it('documentElement 换 class 后重新解析并重画', async () => {
     render(<TraceTimeline trace={trace} height={400} />)
     await waitFor(() => expect(bgFills('#ffffff')).toBeGreaterThan(0))
-
 
     cssVars[TOKENS.bg] = DARK_BG
     document.documentElement.classList.add('dark')
@@ -109,7 +93,6 @@ describe('主题解析（CSS 变量 → canvas）', () => {
   it('data-theme 属性换主题同样有效', async () => {
     render(<TraceTimeline trace={trace} height={400} />)
     await waitFor(() => expect(bgFills('#ffffff')).toBeGreaterThan(0))
-
 
     cssVars[TOKENS.bg] = DARK_BG
     document.documentElement.setAttribute('data-theme', 'dark')

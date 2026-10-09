@@ -2,11 +2,6 @@ import { useEffect, useState } from 'react'
 
 const initial = () => (typeof window === 'undefined' ? 1 : window.devicePixelRatio || 1)
 
-
-
-
-
-
 export function useDevicePixelRatio(): number {
   const [dpr, setDpr] = useState(initial)
 

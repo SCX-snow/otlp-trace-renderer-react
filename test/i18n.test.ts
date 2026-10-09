@@ -1,7 +1,8 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   LOCALE_LABELS,
   MESSAGES,
+  absoluteTime,
   describeWarning,
   format,
   formatDurationUs,
@@ -194,6 +195,13 @@ describe('formatDurationUs', () => {
     expect(formatDurationUs(2_000_000)).toBe('2s')
   })
 
+  it('毫秒 / 秒的分界在 1e6（回归：边界挪到 1e5 会让 500ms 显示成 0.5s）', () => {
+    expect(formatDurationUs(100_000)).toBe('100ms')
+    expect(formatDurationUs(500_000)).toBe('500ms')
+    expect(formatDurationUs(999_000)).toBe('999ms')
+    expect(formatDurationUs(1_000_000)).toBe('1s')
+  })
+
   it('传 locale 后小数分隔符跟着语言走', () => {
     expect(formatDurationUs(1500, 'en-US')).toBe('1.5ms')
     expect(formatDurationUs(1500, 'de-DE')).toBe('1,5ms')
@@ -206,5 +214,55 @@ describe('formatDurationUs', () => {
   it('内置语言不改变可读性', () => {
     expect(formatDurationUs(1500, 'zh-CN')).toBe('1.5ms')
     expect(formatDurationUs(1500, 'ja')).toBe('1.5ms')
+  })
+})
+
+describe('absoluteTime', () => {
+  it('纳秒基准 + 相对微秒 → 绝对时刻', () => {
+    expect(absoluteTime('1700000000000000000', 0)!.toISOString()).toBe('2023-11-14T22:13:20.000Z')
+    expect(absoluteTime('1791455541882442300', 0)!.toISOString()).toBe('2026-10-08T10:32:21.882Z')
+    expect(absoluteTime('1791455541882442300', 300_000)!.toISOString()).toBe(
+      '2026-10-08T10:32:22.182Z',
+    )
+  })
+
+  it('走的是 BigInt 而不是先转 number（回归：坑 #1 的 double 舍入会让毫秒进位）', () => {
+    expect(absoluteTime('1700000000000999999', 0)!.toISOString()).toBe('2023-11-14T22:13:20.000Z')
+  })
+
+  it('负偏移（span 起点早于基准）也能算', () => {
+    expect(absoluteTime('1700000000000000000', -1_500_000)!.toISOString()).toBe(
+      '2023-11-14T22:13:18.500Z',
+    )
+  })
+
+  it('解析不了就返回 null —— 详情面板据此整行不显示', () => {
+    expect(absoluteTime('nope', 0)).toBeNull()
+    expect(absoluteTime('1.5', 0)).toBeNull()
+    expect(absoluteTime('12.0', 0)).toBeNull()
+  })
+
+  it('空串与纯空白返回 null，不是 1970', () => {
+    expect(absoluteTime('', 0)).toBeNull()
+    expect(absoluteTime('   ', 0)).toBeNull()
+    expect(absoluteTime('\n', 0)).toBeNull()
+  })
+
+  it('前后有空白但内容合法仍然照算（BigInt 允许首尾空白）', () => {
+    expect(absoluteTime('  1700000000000000000  ', 0)!.toISOString()).toBe(
+      '2023-11-14T22:13:20.000Z',
+    )
+  })
+})
+
+describe('resolveLocale 的运行时兜底', () => {
+  it('没有 navigator（SSR / 老运行时）时回落 en，而不是抛', () => {
+    vi.stubGlobal('navigator', undefined)
+    try {
+      expect(resolveLocale()).toBe('en')
+      expect(resolveLocale('auto')).toBe('en')
+    } finally {
+      vi.unstubAllGlobals()
+    }
   })
 })

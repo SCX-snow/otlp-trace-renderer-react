@@ -1,5 +1,4 @@
-
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { DEFAULT_METRICS } from '../src/headless/layout/metrics'
 import { DEFAULT_THEME } from '../src/headless/theme/tokens'
@@ -14,13 +13,17 @@ const CANVAS_HEIGHT = 400
 const ROW_ORIGIN = DEFAULT_METRICS.rulerHeight + DEFAULT_METRICS.paddingTop
 
 let ctx: ReturnType<typeof installDomShims>['ctx']
+let shims: ReturnType<typeof installDomShims>
 
 beforeEach(() => {
-  ctx = installDomShims(NAME_COLUMN + CANVAS_WIDTH, CANVAS_HEIGHT).ctx
-
+  shims = installDomShims(NAME_COLUMN + CANVAS_WIDTH, CANVAS_HEIGHT)
+  ctx = shims.ctx
   Object.defineProperty(HTMLCanvasElement.prototype, 'clientWidth', {
     configurable: true,
-    get: () => CANVAS_WIDTH,
+    get(this: HTMLCanvasElement) {
+      const styled = Number.parseFloat(this.style.width)
+      return Number.isFinite(styled) ? styled : CANVAS_WIDTH
+    },
   })
   HTMLCanvasElement.prototype.getBoundingClientRect = () =>
     ({
@@ -50,11 +53,6 @@ const trace = toTraceData([
 const rulerLabels = (ops: CtxOp[]) => ops.filter((op) => op.op === 'fillText').map((op) => op.text)
 const nameRows = () => screen.getAllByTitle(/svc · op-/)
 
-
-
-
-
-
 const lastFrameLabels = () => rulerLabels(ctx.ops).slice(-4)
 
 const tickUs = (label: string | undefined) => {
@@ -63,7 +61,6 @@ const tickUs = (label: string | undefined) => {
   const value = Number(matched[1])
   return matched[2] === 's' ? value * 1e6 : matched[2] === 'ms' ? value * 1e3 : value
 }
-
 
 const canvasElement = () => document.querySelector('canvas') as HTMLCanvasElement
 
@@ -149,7 +146,6 @@ describe('TraceTimeline · 交互', () => {
     const onSelectedSpanIdChange = vi.fn()
     render(<TraceTimeline trace={trace} onSelectedSpanIdChange={onSelectedSpanIdChange} />)
 
-
     expect(screen.queryByTestId('otlp-toggle-a')).toBeNull()
     expect(screen.queryByTestId('otlp-toggle-b')).toBeNull()
 
@@ -201,7 +197,6 @@ describe('TraceTimeline · 交互', () => {
     render(<TraceTimeline trace={trace} />)
     const element = canvasElement()
 
-
     const zoomIn = () =>
       element.dispatchEvent(
         new WheelEvent('wheel', {
@@ -224,6 +219,30 @@ describe('TraceTimeline · 交互', () => {
     await waitFor(() => expect(lastFrameLabels().length).toBe(4))
 
     expect(tickUs(lastFrameLabels()[0])).toBeGreaterThan(0)
+  })
+
+  it('拖过 CLICK_SLOP 就只算平移，松手不选中（回归：拖动会顺带改选中）', () => {
+    const onSelectedSpanIdChange = vi.fn()
+    render(<TraceTimeline trace={trace} onSelectedSpanIdChange={onSelectedSpanIdChange} />)
+    const element = canvasElement()
+
+    fireEvent.pointerDown(element, {
+      clientX: NAME_COLUMN + 300,
+      clientY: ROW_ORIGIN + 10,
+      pointerId: 1,
+    })
+    fireEvent.pointerMove(element, {
+      clientX: NAME_COLUMN + 200,
+      clientY: ROW_ORIGIN + 10,
+      pointerId: 1,
+    })
+    fireEvent.pointerUp(element, {
+      clientX: NAME_COLUMN + 200,
+      clientY: ROW_ORIGIN + 10,
+      pointerId: 1,
+    })
+
+    expect(onSelectedSpanIdChange).not.toHaveBeenCalled()
   })
 
   it('Ctrl + 滚轮缩放，并把滚动事件吃掉', async () => {
@@ -279,17 +298,14 @@ describe('TraceTimeline · 交互', () => {
   })
 })
 
-
 const nameRowTop = (spanId: string) =>
   Number.parseFloat(screen.getByTitle(`svc · op-${spanId}`).style.top)
 
 describe('TraceTimeline · 滚动对齐', () => {
-
   const many = toTraceData(
     Array.from({ length: 40 }, (_, i) => rawSpan(`s${i}`, i * 10, i * 10 + 5)),
   )
   const ROW_HEIGHT = DEFAULT_METRICS.rowHeight
-
 
   const rowHighlight = () =>
     ctx.ops
@@ -309,15 +325,12 @@ describe('TraceTimeline · 滚动对齐', () => {
     scroller.scrollTop = 240
     fireEvent.scroll(scroller)
 
-
     await waitFor(() => expect(nameRowTop('s11')).toBe(ROW_ORIGIN + 11 * ROW_HEIGHT))
     expect(nameRowTop('s10')).toBe(ROW_ORIGIN + 10 * ROW_HEIGHT)
-
 
     const viewportY = nameRowTop('s11') - 240
     expect(viewportY).toBeGreaterThanOrEqual(ROW_ORIGIN)
     expect(viewportY).toBeLessThan(ROW_ORIGIN + CANVAS_HEIGHT)
-
 
     await waitFor(() => expect(rowHighlight()).toBeTruthy())
     expect(rowHighlight()?.args[1]).toBe(nameRowTop('s10') - 240)
@@ -332,7 +345,6 @@ describe('TraceTimeline · 滚动对齐', () => {
     fireEvent.scroll(scroller)
 
     await waitFor(() => expect(screen.queryByTitle('svc · op-s0')).toBeNull())
-
 
     const targetRow = 15
     const y = ROW_ORIGIN + targetRow * ROW_HEIGHT - 240 + 8
@@ -357,11 +369,60 @@ describe('TraceTimeline · 滚动对齐', () => {
     const y = ROW_ORIGIN + 15 * ROW_HEIGHT - 240 + 8
     fireEvent.pointerMove(canvasElement(), { clientX: NAME_COLUMN + 300, clientY: y, pointerId: 1 })
 
-
     await waitFor(() =>
       expect(screen.getByTitle('svc · op-s15').style.background).toContain('row-hover'),
     )
     expect(screen.getByTitle('svc · op-s12').style.background).toBe('')
+  })
+})
+
+describe('TraceTimeline · 名称列三角', () => {
+  it('双击三角不会连带触发行的展开/折叠（回归：事件的 stopPropagation 被删掉）', () => {
+    render(<TraceTimeline trace={trace} />)
+    const caret = screen.getByTestId('otlp-toggle-root')
+    expect(caret.getAttribute('aria-expanded')).toBe('true')
+
+    fireEvent.doubleClick(caret)
+
+    expect(caret.getAttribute('aria-expanded')).toBe('true')
+  })
+})
+
+describe('TraceTimeline · 尺寸与像素比变化', () => {
+  it('容器变窄会重排：名称列让位，时间轴仍留够最小宽度', async () => {
+    render(<TraceTimeline trace={trace} />)
+    await waitFor(() => expect(ctx.ops.length).toBeGreaterThan(0))
+    const nameColumn = screen.getByTestId('otlp-name-column')
+    expect(nameColumn.style.width).toBe(`${NAME_COLUMN}px`)
+
+    act(() => shims.resizeTo(300, CANVAS_HEIGHT))
+
+    await waitFor(() => expect(nameColumn.style.width).toBe('180px'))
+  })
+
+  it('canvas 自己的尺寸变了也会重画（props 没变，只有内部 observer 能发现）', async () => {
+    render(<TraceTimeline trace={trace} />)
+    const element = canvasElement()
+    await waitFor(() => expect(ctx.ops.length).toBeGreaterThan(0))
+
+    element.style.width = '300px'
+    ctx.reset()
+    act(() => shims.fireResize(element))
+
+    const background = ctx.ops.find((op) => op.op === 'fillRect')
+    expect(background?.args[2]).toBe(300)
+  })
+
+  it('devicePixelRatio 变化后按新倍率重设缓冲（回归：换屏后画布发虚）', async () => {
+    render(<TraceTimeline trace={trace} />)
+    const element = canvasElement()
+    await waitFor(() => expect(ctx.ops.length).toBeGreaterThan(0))
+    expect(element.width).toBe(CANVAS_WIDTH)
+
+    vi.stubGlobal('devicePixelRatio', 2)
+    act(() => shims.fireMediaChange())
+
+    await waitFor(() => expect(element.width).toBe(CANVAS_WIDTH * 2))
   })
 })
 

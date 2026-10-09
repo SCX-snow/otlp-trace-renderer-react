@@ -70,6 +70,15 @@ describe('nanos → µs 精度', () => {
   })
 })
 
+describe('排序稳定性', () => {
+  it('同一 startUs 按时长降序，行序才可复现（回归：只按时长反向排）', () => {
+    const trace = normalizeTrace(
+      traceOf([span('short', 100_000n, 200_000n), span('long', 100_000n, 900_000n)]),
+    )
+    expect(trace.spans.map((s) => s.spanId)).toEqual(['long', 'short'])
+  })
+})
+
 describe('树结构', () => {
   const spans = [
     span('root', 0n, 1_000_000_000n),

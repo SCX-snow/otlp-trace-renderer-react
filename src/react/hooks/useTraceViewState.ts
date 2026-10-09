@@ -13,7 +13,6 @@ import type { SpanId, TraceData } from '../../headless/model/types'
 import type { Viewport } from '../../headless/layout/viewport'
 import { buildServiceColors } from '../../render/colors'
 
-
 export interface TraceView {
   state: ViewState
   dispatch: (action: Action) => void
@@ -42,19 +41,8 @@ export interface TraceViewStateOptions {
   defaultCollapsedSpanIds?: ReadonlySet<SpanId>
   onCollapsedSpanIdsChange?: (collapsed: ReadonlySet<SpanId>) => void
 
-
   servicePalette?: readonly string[]
 }
-
-
-
-
-
-
-
-
-
-
 
 export interface TraceDetailViewApi {
   state: ViewState
@@ -81,16 +69,6 @@ export function createTraceDetailViewApi(view: TraceView): TraceDetailViewApi {
   }
 }
 
-
-
-
-
-
-
-
-
-
-
 export function useTraceViewState(options: TraceViewStateOptions): TraceView {
   const { trace, metrics } = options
 
@@ -107,12 +85,10 @@ export function useTraceViewState(options: TraceViewStateOptions): TraceView {
   const widthRef = useRef(0)
   const pendingEffects = useRef<ReducerEffects>({})
 
-
   const latest = useRef(options)
   useEffect(() => {
     latest.current = options
   })
-
 
   const [prevTrace, setPrevTrace] = useState(trace)
   if (prevTrace !== trace) {

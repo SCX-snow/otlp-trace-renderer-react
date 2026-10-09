@@ -14,16 +14,6 @@ import { DEFAULT_THEME } from '../src/headless/theme/tokens'
 import { createNullCtx } from './fake-ctx'
 import { at, makeTraceData, rawSpan } from './helpers/trace-factory'
 
-
-
-
-
-
-
-
-
-
-
 function medianPerOp(run: () => void, iterations: number, repeats = 5): number {
   const samples: number[] = []
   for (let round = 0; round < repeats; round++) {
@@ -60,7 +50,6 @@ const scene: TimelineScene = {
   durations,
   serviceColors,
 }
-
 
 const rawSpans: RawSpan[] = Array.from({ length: 5000 }, (_, i) => ({
   ...rawSpan(`s${String(i).padStart(6, '0')}`, i * 20, i * 20 + 15, null),

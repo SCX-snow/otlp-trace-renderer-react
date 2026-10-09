@@ -14,16 +14,7 @@ export interface Point {
   y: number
 }
 
-
-
-
-
-
-
-
-
 export function rowAtY(y: number, rowCount: number, metrics: Metrics, scrollTop: number): number {
-
   if (y < metrics.rulerHeight) return -1
   const contentY = y + scrollTop
   const rowIndex = Math.floor(
@@ -31,12 +22,6 @@ export function rowAtY(y: number, rowCount: number, metrics: Metrics, scrollTop:
   )
   return rowIndex >= 0 && rowIndex < rowCount ? rowIndex : -1
 }
-
-
-
-
-
-
 
 export function barRange(
   row: Row,
@@ -54,7 +39,6 @@ export function barRange(
   return { x0, x1 }
 }
 
-
 export function hitTest(
   point: Point,
   rows: Row[],
@@ -69,8 +53,6 @@ export function hitTest(
 
   const row = rows[rowIndex]!
   const { x0, x1 } = barRange(row, trace, viewport, metrics, axis)
-
-
 
   if (point.x >= x0 && point.x <= x1) {
     return { type: 'row', rowIndex, spanIndex: row.spanIndex, zone: 'bar' }

@@ -1,12 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 
-
-
-
-
-
-
 const read = (relative: string) => readFileSync(new URL(relative, import.meta.url), 'utf8')
 
 const html = read('../examples/react-vite/index.html')
@@ -16,7 +10,12 @@ const cssBlock = (selector: string) =>
   new RegExp(`${selector}\\s*\\{([\\s\\S]*?)\\}`).exec(html)?.[1] ?? ''
 
 const declaredVars = (block: string) =>
-  [...block.matchAll(/(--[a-z-]+)\s*:/g)].map((match) => match[1]!)
+  new Map(
+    [...block.matchAll(/(--[a-z-]+)\s*:\s*([^;]+);/g)].map((match) => [
+      match[1]!,
+      match[2]!.trim(),
+    ]),
+  )
 
 describe('example · 深色模式', () => {
   it('组件深色主题用库的预设，不手抄 token', () => {
@@ -26,12 +25,16 @@ describe('example · 深色模式', () => {
     expect(cssBlock('html.dark')).not.toContain('--otlp-trace-')
   })
 
-  it('html.dark 覆盖了页面自己声明的每一个 --app-* 变量', () => {
+  it('html.dark 覆盖了页面自己声明的每一个 --app-* 变量，且值真的不同', () => {
     const light = declaredVars(cssBlock(':root'))
-    const dark = new Set(declaredVars(cssBlock('html.dark')))
+    const dark = declaredVars(cssBlock('html.dark'))
 
-    expect(light.length).toBeGreaterThan(0)
-    expect(light.filter((name) => !dark.has(name))).toEqual([])
+    expect(light.size).toBeGreaterThan(0)
+    expect([...light.keys()].filter((name) => !dark.has(name))).toEqual([])
+    const identical = [...light]
+      .filter(([name, value]) => dark.get(name) === value)
+      .map(([name]) => name)
+    expect(identical).toEqual([])
   })
 
   it('首帧脚本与开关共用同一个 localStorage key', () => {

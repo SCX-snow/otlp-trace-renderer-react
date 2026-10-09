@@ -24,7 +24,6 @@ export interface FakeCtx {
   reset(): void
 }
 
-
 export const FAKE_CHAR_WIDTH = 6
 
 const STATE_KEYS = [
@@ -35,12 +34,6 @@ const STATE_KEYS = [
   'textAlign',
   'textBaseline',
 ] as const
-
-
-
-
-
-
 
 export function createFakeCtx(): FakeCtx {
   const ops: CtxOp[] = []
@@ -99,10 +92,6 @@ export function createFakeCtx(): FakeCtx {
     },
   }
 }
-
-
-
-
 
 const noop = () => {}
 

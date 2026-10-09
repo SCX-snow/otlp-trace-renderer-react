@@ -8,12 +8,6 @@ import {
 import { SERVICE_PALETTE, SERVICE_PALETTE_DARK } from '../src/render/colors'
 import { contrastRatio as contrast, hueOf, inRedBand } from './helpers/color'
 
-
-
-
-
-
-
 const tokenKeys = Object.keys(TOKENS) as ThemeToken[]
 
 describe('主题预设', () => {
@@ -76,5 +70,18 @@ describe('service 色板', () => {
 
     const dimmest = Math.min(...SERVICE_PALETTE.map((color) => contrast(color, bg)))
     expect(dimmest).toBeLessThan(4)
+  })
+})
+
+describe('theme-inject 在没有 document 的环境', () => {
+  it('注入是空操作、释放也不抛，计数保持 0', async () => {
+    const { acquireThemeDefaults, themeRefCount } = await import('../src/react/theme-inject')
+
+    const release = acquireThemeDefaults()
+    expect(typeof release).toBe('function')
+    expect(themeRefCount()).toBe(0)
+
+    expect(() => release()).not.toThrow()
+    expect(themeRefCount()).toBe(0)
   })
 })

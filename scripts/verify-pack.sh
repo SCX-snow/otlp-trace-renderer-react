@@ -67,6 +67,23 @@ EOF
 }
 EOF
 
+  cat > "$dir/tsconfig.node10.json" <<'EOF'
+{
+  "compilerOptions": {
+    "target": "es2020",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true
+  },
+  "include": ["src/node10.ts"]
+}
+EOF
+
   cat > "$dir/vite.config.ts" <<'EOF'
 import react from '@vitejs/plugin-react'
 import { defineConfig } from 'vite'
@@ -109,11 +126,13 @@ import { createRoot } from 'react-dom/client'
 import { TraceDetailView } from '@slcomplex/otlp-trace-renderer'
 import { flattenRows, type TraceData } from '@slcomplex/otlp-trace-renderer/headless'
 import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
+import { normalizeTempoTrace } from '@slcomplex/otlp-trace-renderer/adapters/tempo'
 import raw from './trace.json'
 
 const trace: TraceData = normalizeOtlpTrace(raw)
 const rows = flattenRows(trace, new Set())
 console.log(`[verify-pack] spans=${trace.spans.length} rows=${rows.length}`)
+console.log(`[verify-pack] tempo adapter=${typeof normalizeTempoTrace}`)
 
 const root = document.getElementById('root')
 if (!root) throw new Error('#root missing')
@@ -132,6 +151,20 @@ export function rowCount(raw: unknown): number {
   return flattenRows(normalizeOtlpTrace(raw), new Set()).length
 }
 EOF
+
+  cat > "$dir/src/node10.ts" <<'EOF'
+import { TraceDetailView, type TraceDetailViewApi } from '@slcomplex/otlp-trace-renderer'
+import { TraceTimeline } from '@slcomplex/otlp-trace-renderer/react'
+import { flattenRows, type TraceData } from '@slcomplex/otlp-trace-renderer/headless'
+import { normalizeOtlpTrace } from '@slcomplex/otlp-trace-renderer/adapters/otlp'
+import { normalizeTempoTrace } from '@slcomplex/otlp-trace-renderer/adapters/tempo'
+
+export const components = [TraceDetailView, TraceTimeline]
+export const adapters = [normalizeOtlpTrace, normalizeTempoTrace]
+export type Trace = TraceData
+export type Api = TraceDetailViewApi
+export const rows: number = flattenRows(normalizeOtlpTrace({}), new Set()).length
+EOF
 }
 
 verify_consumer() {
@@ -147,7 +180,10 @@ verify_consumer() {
   " || die "装在 node_modules 里的包读不出来（没真装上？）"
 
   ( cd "$dir" && npx tsc --noEmit ) || die "React $major: tsc --noEmit 失败（.d.ts 或 exports 的 types 条件有问题）"
-  done_ "tsc --noEmit（三个子路径都解析）"
+  done_ "tsc --noEmit（五个入口都解析）"
+
+  ( cd "$dir" && npx tsc -p tsconfig.node10.json ) || die "React $major: moduleResolution:node 解析不了子路径（package.json 的 typesVersions 缺项？漏了 './react' 也会这样）"
+  done_ "tsc -p tsconfig.node10.json（node10 也能解析五个入口）"
 
   ( cd "$dir" && npx vite build >/dev/null ) || die "React $major: vite build 失败"
   [ -f "$dir/dist-app/index.html" ] || die "React $major: 没产出 dist-app/index.html"
@@ -168,10 +204,12 @@ verify_consumer() {
     const root = await import('@slcomplex/otlp-trace-renderer')
     const headless = await import('@slcomplex/otlp-trace-renderer/headless')
     const otlp = await import('@slcomplex/otlp-trace-renderer/adapters/otlp')
+    const tempo = await import('@slcomplex/otlp-trace-renderer/adapters/tempo')
     const expected = [
       ['root', root, ['TraceDetailView', 'TraceTimeline', 'useTraceMessages'], ['SpanDetailPanel', 'TraceToolbar', 'SpanNameColumn']],
       ['headless', headless, ['flattenRows', 'normalizeTrace', 'traceReducer'], ['DEFAULT_THEME']],
       ['adapters/otlp', otlp, ['normalizeOtlpTrace'], []],
+      ['adapters/tempo', tempo, ['normalizeTempoTrace'], []],
     ]
     // forwardRef / memo 包过的组件是对象不是函数，所以「存在」和「是函数」分开断言
     for (const [name, mod, fns, values] of expected) {
@@ -181,9 +219,9 @@ verify_consumer() {
     const raw = JSON.parse(await fs.readFile('src/trace.json', 'utf8'))
     const rows = headless.flattenRows(otlp.normalizeOtlpTrace(raw), new Set())
     if (rows.length === 0) throw new Error('flattenRows 返回空')
-    console.log('  node ESM：三个子路径 import OK，flattenRows 得到 ' + rows.length + ' 行')
+    console.log('  node ESM：四个子路径 import OK，flattenRows 得到 ' + rows.length + ' 行')
   " ) || die "React $major: Node 里 import 子路径失败"
-  done_ "node ESM（import 不碰 window，SSR 里也能 import）"
+  done_ "node ESM（四个子路径 import 不碰 window，SSR 里也能 import）"
 }
 
 step "build + pack"

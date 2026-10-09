@@ -46,7 +46,6 @@ function localPoint(element: HTMLElement, clientX: number, clientY: number) {
   return { x: clientX - rect.left, y: clientY - rect.top }
 }
 
-
 const CLICK_SLOP_PX = 3
 const WHEEL_ZOOM_STEP = 1.15
 
@@ -119,7 +118,6 @@ export function TimelineCanvas(props: TimelineCanvasProps) {
     [theme],
   )
 
-
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
@@ -176,10 +174,6 @@ export function TimelineCanvas(props: TimelineCanvasProps) {
       })
     }
   }
-
-
-
-
 
   const onDoubleClick = (event: ReactMouseEvent<HTMLCanvasElement>) => {
     const hit = hitAt(localPoint(event.currentTarget, event.clientX, event.clientY))

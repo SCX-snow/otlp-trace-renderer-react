@@ -1,6 +1,5 @@
-
 import { StrictMode } from 'react'
-import { cleanup, fireEvent, render, screen, within } from '@testing-library/react'
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { RawSpan } from '../src/headless/model/types'
 import { SpanDetailPanel } from '../src/react/SpanDetailPanel'
@@ -111,6 +110,36 @@ describe('SpanDetailPanel', () => {
   it('没有 clipboard API 时点复制不抛', () => {
     render(<SpanDetailPanel trace={trace} spanId="root" />)
     expect(() => fireEvent.click(screen.getByRole('button', { name: '复制 JSON' }))).not.toThrow()
+  })
+
+  it('复制成功后按钮变「已复制」，并把 span 的 JSON 写进剪贴板（回归：失败永远静默）', async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined)
+    Object.defineProperty(window.navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+    try {
+      render(<SpanDetailPanel trace={trace} spanId="root" />)
+      fireEvent.click(screen.getByRole('button', { name: '复制 JSON' }))
+
+      await waitFor(() => expect(screen.getByRole('button', { name: '已复制' })).toBeTruthy())
+      expect(writeText).toHaveBeenCalledWith(expect.stringContaining('"spanId": "root"'))
+    } finally {
+      delete (window.navigator as { clipboard?: unknown }).clipboard
+    }
+  })
+
+  it('link 指向别的 trace 时标出「跨 trace」前缀（回归：提示丢失后用户以为链接坏了）', () => {
+    const otherTraceId = 'cd'.repeat(16)
+    const crossTrace = toTraceData([
+      {
+        ...rawSpan('root', 0, 100),
+        links: [{ traceId: otherTraceId, spanId: 'x', attributes: {} }],
+      },
+    ])
+    render(<SpanDetailPanel trace={crossTrace} spanId="root" />)
+
+    expect(panel().getByText(new RegExp(`跨 trace ${otherTraceId.slice(0, 12)}`))).toBeTruthy()
   })
 })
 
@@ -230,7 +259,6 @@ describe('受控 / 非受控', () => {
 
     expect(panel().getByText(/点时间轴上的长条/)).toBeTruthy()
 
-
     rerender(<TraceDetailView trace={trace} />)
     expect(panel().getByText('op-a')).toBeTruthy()
   })
@@ -298,7 +326,6 @@ describe('扩展点', () => {
       <TraceDetailView trace={trace} servicePalette={[magenta]} defaultSelectedSpanId={null} />,
     )
 
-
     const barFills = ctx.ops.filter((op: CtxOp) => op.op === 'fillRect' && op.fillStyle === magenta)
     expect(barFills.length).toBeGreaterThan(0)
   })
@@ -310,10 +337,10 @@ describe('扩展点', () => {
   })
 })
 
-
-
 const before = (a: Node, b: Node) =>
   (a.compareDocumentPosition(b) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0
+
+const clickInPanel = (name: string) => fireEvent.click(panel().getByRole('button', { name }))
 
 describe('详情区插槽', () => {
   it('renderSpanDetailActions 渲染在标题栏里、复制按钮之前', () => {
@@ -425,6 +452,52 @@ describe('详情区插槽', () => {
 
     fireEvent.click(panel().getByRole('button', { name: '全折' }))
     expect(onCollapsedSpanIdsChange).toHaveBeenLastCalledWith(new Set(['root']))
+  })
+
+  it('插槽里的 api：select / zoomBy / fit / expandAll 都接到视图状态上', () => {
+    const onSelectedSpanIdChange = vi.fn()
+    const onViewportChange = vi.fn()
+    const onCollapsedSpanIdsChange = vi.fn()
+    render(
+      <TraceDetailView
+        trace={trace}
+        defaultSelectedSpanId="a"
+        defaultCollapsedSpanIds={new Set(['root'])}
+        onSelectedSpanIdChange={onSelectedSpanIdChange}
+        onViewportChange={onViewportChange}
+        onCollapsedSpanIdsChange={onCollapsedSpanIdsChange}
+        renderSpanDetailExtra={(_span, _trace, api) => (
+          <>
+            <button type="button" onClick={() => api.select('b')}>
+              选中 b
+            </button>
+            <button type="button" onClick={() => api.zoomBy(2)}>
+              放大
+            </button>
+            <button type="button" onClick={() => api.fit()}>
+              适配
+            </button>
+            <button type="button" onClick={() => api.expandAll()}>
+              全展
+            </button>
+          </>
+        )}
+      />,
+    )
+
+    const click = clickInPanel
+    const lastSpanUs = () => (onViewportChange.mock.calls.at(-1)![0] as { spanUs: number }).spanUs
+
+    click('选中 b')
+    expect(onSelectedSpanIdChange).toHaveBeenLastCalledWith('b')
+
+    click('放大')
+    const zoomedSpanUs = lastSpanUs()
+    click('适配')
+    expect(lastSpanUs()).toBeGreaterThan(zoomedSpanUs)
+
+    click('全展')
+    expect(onCollapsedSpanIdsChange).toHaveBeenLastCalledWith(new Set())
   })
 
   it('SpanDetailPanel 单独用时插槽同样可用（不需要 view）', () => {

@@ -1,10 +1,8 @@
 export interface Viewport {
-
   startUs: number
 
   spanUs: number
 }
-
 
 export const MIN_SPAN_US = 1
 
@@ -29,11 +27,6 @@ export function maxSpanUs(durationUs: number): number {
 
 const sameViewport = (a: Viewport, b: Viewport) => a.startUs === b.startUs && a.spanUs === b.spanUs
 
-
-
-
-
-
 export function clampViewport(viewport: Viewport, durationUs: number): Viewport {
   let spanUs = viewport.spanUs
   const max = maxSpanUs(durationUs)
@@ -54,12 +47,6 @@ export function fitViewport(durationUs: number): Viewport {
   return { startUs: 0, spanUs }
 }
 
-
-
-
-
-
-
 export function zoomAt(
   viewport: Viewport,
   anchorPx: number,
@@ -79,7 +66,6 @@ export function zoomAt(
   return sameViewport(viewport, next) ? viewport : next
 }
 
-
 export function panByPx(
   viewport: Viewport,
   dxPx: number,
@@ -93,7 +79,6 @@ export function panByPx(
   )
   return sameViewport(viewport, next) ? viewport : next
 }
-
 
 export function revealRange(
   viewport: Viewport,

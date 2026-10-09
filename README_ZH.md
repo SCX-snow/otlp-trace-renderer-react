@@ -27,6 +27,16 @@ export function TracePage() {
 }
 ```
 
+数据来自 Grafana Tempo 时走另一个子路径。Tempo 的 `/api/traces/<id>` 响应外面有 `trace` 壳，壳里的字段名还分两代
+（≥2.x `resourceSpans` + `scopeSpans`，≤1.x `batches` + `instrumentationLibrarySpans`），这个适配器都认：
+
+```tsx
+import { normalizeTempoTrace } from '@slcomplex/otlp-trace-renderer/adapters/tempo'
+import tempoJson from './tempo-trace.json'
+
+const trace = normalizeTempoTrace(tempoJson)
+```
+
 深色模式（两个 prop：`theme` 换底色文字，`servicePalette` 换长条配色）：
 
 ```tsx
@@ -158,6 +168,7 @@ const [selected, setSelected] = useState<SpanId | null>(null)
 
 - **React 18.3 / 19.3**
 - **ESM only**
+- **TypeScript**：`moduleResolution` 用 `bundler` / `node16` / `node`（node10）都能解析子路径
 - **零运行时依赖**
 - **Node ≥ 18**
 - **现代浏览器**
@@ -182,6 +193,7 @@ pnpm storybook          # 组件目录 → http://localhost:6006（13 个 story�
 pnpm install
 pnpm dev              # playground（vite，直接用 src）
 pnpm test             # vitest（node + jsdom 两种环境）
+pnpm coverage         # 覆盖率诊断（v8，html 在 coverage/），只看盲点、不当门禁
 pnpm typecheck        # tsc --noEmit
 pnpm lint             # oxlint
 pnpm build            # tsup → dist（ESM + .d.ts）

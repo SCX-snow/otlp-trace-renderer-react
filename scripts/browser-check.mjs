@@ -1,25 +1,5 @@
 #!/usr/bin/env node
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 import { execFileSync } from 'node:child_process'
 import { createServer } from 'node:http'
 import { existsSync, readFileSync } from 'node:fs'
@@ -30,7 +10,6 @@ import process from 'node:process'
 const ROOT = fileURLToPath(new URL('..', import.meta.url))
 const EXAMPLE_DIST = join(ROOT, 'examples', 'react-vite', 'dist')
 const PORT = Number(process.env.BROWSER_CHECK_PORT ?? 5199)
-
 
 const localBrowsers = join(ROOT, '.playwright-browsers')
 if (process.env.PLAYWRIGHT_BROWSERS_PATH === undefined && existsSync(localBrowsers)) {
@@ -89,7 +68,6 @@ function serve() {
   return new Promise((resolve) => server.listen(PORT, () => resolve(server)))
 }
 
-
 const canvasPixel = (page) =>
   page.evaluate(() => {
     const canvas = document.querySelector('canvas')
@@ -97,7 +75,6 @@ const canvasPixel = (page) =>
     const [r, g, b] = ctx.getImageData(canvas.width - 30, canvas.height - 20, 1, 1).data
     return `#${[r, g, b].map((v) => v.toString(16).padStart(2, '0')).join('')}`
   })
-
 
 const visibleRows = (page) =>
   page.evaluate(() =>
@@ -252,8 +229,6 @@ async function main() {
 
   step('条目多时详情区不被压扁')
 
-
-
   const detailHeightFor = async (spans) => {
     await page.goto(`${base}/?spans=${spans}&theme=light`, { waitUntil: 'load' })
     await page.waitForSelector('canvas')
@@ -279,8 +254,6 @@ async function main() {
   )
 
   step('标尺挡住半行条子')
-
-
 
   await page.locator('[role="application"]').focus()
   await page.keyboard.press('f')

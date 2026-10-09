@@ -1,6 +1,3 @@
-
-
-
 export function hueOf(hex: string): number {
   const r = Number.parseInt(hex.slice(1, 3), 16) / 255
   const g = Number.parseInt(hex.slice(3, 5), 16) / 255
@@ -13,7 +10,6 @@ export function hueOf(hex: string): number {
   return (((h * 60) % 360) + 360) % 360
 }
 
-
 export const inRedBand = (hue: number) => hue < 22 || hue > 340
 
 function luminance(hex: string): number {
@@ -22,7 +18,6 @@ function luminance(hex: string): number {
     .map((v) => (v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4))
   return 0.2126 * channels[0]! + 0.7152 * channels[1]! + 0.0722 * channels[2]!
 }
-
 
 export function contrastRatio(a: string, b: string): number {
   const la = luminance(a)

@@ -15,7 +15,6 @@ export function rowOfSpan(rows: Row[], trace: TraceData, spanId: SpanId | null):
   return -1
 }
 
-
 export function ancestorsOf(trace: TraceData, spanIndex: number): SpanId[] {
   const out: SpanId[] = []
   const guard = new Set<number>()
@@ -31,14 +30,12 @@ export function ancestorsOf(trace: TraceData, spanIndex: number): SpanId[] {
   return out.reverse()
 }
 
-
 export function precomputeDurations(trace: TraceData): Float64Array {
   const durations = new Float64Array(trace.spans.length)
   for (let i = 0; i < trace.spans.length; i++) durations[i] = trace.spans[i]!.durationUs
   durations.sort()
   return durations
 }
-
 
 export function durationPercentile(sortedDurations: Float64Array, durationUs: number): number {
   const n = sortedDurations.length

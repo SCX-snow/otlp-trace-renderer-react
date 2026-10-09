@@ -1,5 +1,4 @@
 export interface Metrics {
-
   rowHeight: number
 
   barHeight: number
@@ -34,12 +33,7 @@ export const DEFAULT_METRICS: Metrics = {
   toggleWidth: 14,
 }
 
-
 export const MIN_PLOT_WIDTH = 120
-
-
-
-
 
 export function resolveNameColumnWidth(
   availableWidth: number,

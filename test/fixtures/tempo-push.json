@@ -1,0 +1,147 @@
+{
+  "batches": [
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.namespace", "value": { "stringValue": "simulate" } },
+          { "key": "service.name", "value": { "stringValue": "agent" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "simulate-trace" },
+          "spans": [
+            {
+              "traceId": "uVcaGjWDFe2BR5hxAlmy4w==",
+              "spanId": "Ftt1+us9Nng=",
+              "name": "agent.handle_request",
+              "kind": "SPAN_KIND_SERVER",
+              "startTimeUnixNano": "1791455541882442300",
+              "endTimeUnixNano": "1791455542182442300",
+              "attributes": [
+                { "key": "event_domain", "value": { "stringValue": "agent" } },
+                { "key": "event_name", "value": { "stringValue": "handle_request" } },
+                { "key": "http.route", "value": { "stringValue": "/api/agent/chat" } },
+                { "key": "user_id", "value": { "stringValue": "u-10001" } },
+                { "key": "device_id", "value": { "stringValue": "TEST-SN-001" } },
+                { "key": "message_id", "value": { "stringValue": "msg-10001" } },
+                { "key": "service.name", "value": { "stringValue": "agent" } },
+                { "key": "http.method", "value": { "stringValue": "POST" } },
+                { "key": "http.status_code", "value": { "intValue": "200" } }
+              ],
+              "status": { "code": "STATUS_CODE_OK" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.namespace", "value": { "stringValue": "simulate" } },
+          { "key": "service.name", "value": { "stringValue": "mcp-gateway" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "simulate-trace" },
+          "spans": [
+            {
+              "traceId": "uVcaGjWDFe2BR5hxAlmy4w==",
+              "spanId": "v8ZfkgfVabs=",
+              "parentSpanId": "Ftt1+us9Nng=",
+              "name": "mcp.route",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1791455541932442300",
+              "endTimeUnixNano": "1791455542132442300",
+              "attributes": [
+                { "key": "event_domain", "value": { "stringValue": "mcp" } },
+                { "key": "event_name", "value": { "stringValue": "route" } },
+                { "key": "mcp.server", "value": { "stringValue": "weather-server" } },
+                { "key": "user_id", "value": { "stringValue": "u-10001" } },
+                { "key": "device_id", "value": { "stringValue": "TEST-SN-001" } },
+                { "key": "message_id", "value": { "stringValue": "msg-10001" } },
+                { "key": "service.name", "value": { "stringValue": "mcp-gateway" } },
+                { "key": "http.method", "value": { "stringValue": "POST" } },
+                { "key": "http.status_code", "value": { "intValue": "200" } }
+              ],
+              "status": { "code": "STATUS_CODE_OK" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.namespace", "value": { "stringValue": "simulate" } },
+          { "key": "service.name", "value": { "stringValue": "meta-service" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "simulate-trace" },
+          "spans": [
+            {
+              "traceId": "uVcaGjWDFe2BR5hxAlmy4w==",
+              "spanId": "zRyEBbejlBk=",
+              "parentSpanId": "v8ZfkgfVabs=",
+              "name": "meta.process",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1791455541962442300",
+              "endTimeUnixNano": "1791455542102442300",
+              "attributes": [
+                { "key": "event_domain", "value": { "stringValue": "meta" } },
+                { "key": "event_name", "value": { "stringValue": "process" } },
+                { "key": "meta.route", "value": { "stringValue": "device.execute" } },
+                { "key": "user_id", "value": { "stringValue": "u-10001" } },
+                { "key": "device_id", "value": { "stringValue": "TEST-SN-001" } },
+                { "key": "message_id", "value": { "stringValue": "msg-10001" } },
+                { "key": "service.name", "value": { "stringValue": "meta-service" } },
+                { "key": "http.method", "value": { "stringValue": "POST" } },
+                { "key": "http.status_code", "value": { "intValue": "200" } }
+              ],
+              "status": { "code": "STATUS_CODE_OK" }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "resource": {
+        "attributes": [
+          { "key": "service.namespace", "value": { "stringValue": "simulate" } },
+          { "key": "service.name", "value": { "stringValue": "device" } }
+        ]
+      },
+      "scopeSpans": [
+        {
+          "scope": { "name": "simulate-trace" },
+          "spans": [
+            {
+              "traceId": "uVcaGjWDFe2BR5hxAlmy4w==",
+              "spanId": "gAhAn+6DO+w=",
+              "parentSpanId": "zRyEBbejlBk=",
+              "name": "device.execute",
+              "kind": "SPAN_KIND_CLIENT",
+              "startTimeUnixNano": "1791455541982442300",
+              "endTimeUnixNano": "1791455542082442300",
+              "attributes": [
+                { "key": "event_domain", "value": { "stringValue": "device" } },
+                { "key": "event_name", "value": { "stringValue": "execute" } },
+                { "key": "device.sn", "value": { "stringValue": "TEST-SN-001" } },
+                { "key": "user_id", "value": { "stringValue": "u-10001" } },
+                { "key": "device_id", "value": { "stringValue": "TEST-SN-001" } },
+                { "key": "message_id", "value": { "stringValue": "msg-10001" } },
+                { "key": "service.name", "value": { "stringValue": "device" } },
+                { "key": "http.method", "value": { "stringValue": "POST" } },
+                { "key": "http.status_code", "value": { "intValue": "200" } }
+              ],
+              "status": { "code": "STATUS_CODE_OK" }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

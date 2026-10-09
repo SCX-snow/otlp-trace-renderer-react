@@ -88,7 +88,6 @@ describe('computeVisibleRows', () => {
   })
 
   it('滚动后窗口跟着移动', () => {
-
     const { start, end } = computeVisibleRows(rows, M, 44, 100)
     expect(start).toBe(Math.max(0, Math.floor((44 - rowOrigin(M)) / M.rowHeight)))
     expect(end).toBeLessThanOrEqual(rows.length)
@@ -109,7 +108,6 @@ describe('computeVisibleRows', () => {
     expect(computeVisibleRows([], M, 0, 200)).toEqual({ start: 0, end: 0 })
   })
 })
-
 
 function labelSpans(ops: ReturnType<typeof createFakeCtx>['ops']) {
   return ops
@@ -182,14 +180,12 @@ describe('drawTimeline', () => {
     )
     expect(bars).toHaveLength(3)
 
-
     expect(bars[0]!.args).toEqual([8, 35, 984, M.barHeight])
 
     expect(bars[1]!.args).toEqual([106, 57, 296, M.barHeight])
   })
 
   it('靠后的 span 不会被挤出右边界', () => {
-
     const deep = toTraceData([
       rawSpan('root', 0, 1000),
       rawSpan('l1', 0, 990, 'root'),

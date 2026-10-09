@@ -1,12 +1,6 @@
 import { durationPercentile } from '../headless/interaction/selectors'
 import type { SpanData, TraceData } from '../headless/model/types'
 
-
-
-
-
-
-
 export const SERVICE_PALETTE = [
   '#2563eb',
   '#0d9488',
@@ -17,13 +11,6 @@ export const SERVICE_PALETTE = [
   '#4d7c0f',
   '#64748b',
 ] as const
-
-
-
-
-
-
-
 
 export const SERVICE_PALETTE_DARK = [
   '#60a5fa',
@@ -46,18 +33,10 @@ function hashIndex(serviceName: string, paletteSize: number): number {
   return hash % paletteSize
 }
 
-
-
-
-
-
-
-
 export function buildServiceColors(
   trace: TraceData,
   palette: readonly string[] = SERVICE_PALETTE,
 ): ReadonlyMap<string, string> {
-
   const names = [...new Set(trace.spans.map((span) => span.serviceName))].sort()
   const used = new Set<number>()
   const colors = new Map<string, string>()
@@ -72,12 +51,6 @@ export function buildServiceColors(
   return colors
 }
 
-
-
-
-
-
-
 export function serviceColor(
   serviceName: string,
   options: { palette?: readonly string[] } = {},
@@ -85,7 +58,6 @@ export function serviceColor(
   const palette = options.palette ?? SERVICE_PALETTE
   return palette[hashIndex(serviceName, palette.length)]!
 }
-
 
 export function durationColor(percentile: number): string {
   const p = Math.min(Math.max(percentile, 0), 1)

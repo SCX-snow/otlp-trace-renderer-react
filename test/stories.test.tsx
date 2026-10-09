@@ -1,12 +1,6 @@
-
 import { cleanup, render } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { installDomShims } from './dom-shims'
-
-
-
-
-
 
 type ComposedStories = Record<string, (props: Record<string, unknown>) => JSX.Element>
 

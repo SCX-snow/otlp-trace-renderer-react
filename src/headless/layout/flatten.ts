@@ -6,11 +6,6 @@ export interface Row {
   depth: number
 }
 
-
-
-
-
-
 export function flattenRows(
   trace: TraceData,
   collapsed: ReadonlySet<SpanId>,

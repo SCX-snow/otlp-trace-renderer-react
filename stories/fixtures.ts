@@ -14,7 +14,6 @@ function resources(names: string[]) {
   }))
 }
 
-
 export function syntheticTrace(count: number): TraceData {
   const spans: RawSpan[] = []
   for (let i = 0; i < count; i++) {
@@ -36,7 +35,6 @@ export function syntheticTrace(count: number): TraceData {
   }
   return normalizeTrace({ traceId: 'ab'.repeat(16), spans, resources: resources(SERVICES) })
 }
-
 
 export function realisticTrace(): TraceData {
   const spec: [number, number | null, string, string, number, number, 'unset' | 'error'][] = [

@@ -3,35 +3,15 @@ import { useDevicePixelRatio } from './useDevicePixelRatio'
 import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect'
 
 export interface CanvasPaintSize {
-
   width: number
   height: number
   dpr: number
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function useCanvasDraw(
   canvasRef: { readonly current: HTMLCanvasElement | null },
   paint: (ctx: CanvasRenderingContext2D, size: CanvasPaintSize) => void,
   deps: DependencyList,
-
-
-
-
-
-
 
   syncDeps: DependencyList = [],
 ): void {

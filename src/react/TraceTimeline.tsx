@@ -45,7 +45,6 @@ export interface TraceTimelineProps {
 
   onActivateDetail?: () => void
 
-
   viewport?: Viewport
   defaultViewport?: Viewport
   onViewportChange?: (viewport: Viewport) => void
@@ -88,7 +87,6 @@ export function TraceTimeline(props: TraceTimelineProps) {
 
   const axis = useMemo(() => resolveTimeAxis(plotWidth, metrics), [plotWidth, metrics])
 
-
   const internalView = useTraceViewState({
     trace,
     metrics,
@@ -114,11 +112,8 @@ export function TraceTimeline(props: TraceTimelineProps) {
   const view = externalView ?? internalView
 
   useIsomorphicLayoutEffect(() => {
-
-
     view.setWidth(axis.timeWidth)
   }, [view, axis])
-
 
   useEffect(() => {
     const effects = view.takeEffects()
@@ -141,7 +136,6 @@ export function TraceTimeline(props: TraceTimelineProps) {
 
   const onKeyDown = useCallback(
     (event: ReactKeyboardEvent<HTMLDivElement>) => {
-
       if (event.nativeEvent.isComposing) return
       const command = resolveKeyCommand(event)
       if (command === null) return
@@ -255,8 +249,7 @@ export function TraceTimeline(props: TraceTimelineProps) {
           onHover={onHover}
           onToggleCollapse={onToggleCollapse}
         />
-        {
-}
+        {}
         <div
           style={{
             position: 'sticky',
@@ -300,7 +293,6 @@ export function TraceTimeline(props: TraceTimelineProps) {
     </div>
   )
 }
-
 
 const visuallyHidden: CSSProperties = {
   position: 'absolute',

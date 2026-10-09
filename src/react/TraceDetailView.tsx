@@ -20,7 +20,6 @@ import { acquireThemeDefaults } from './theme-inject'
 export interface TraceDetailViewProps {
   trace: TraceData
 
-
   viewport?: Viewport
   defaultViewport?: Viewport
   onViewportChange?: (viewport: Viewport) => void
@@ -33,7 +32,6 @@ export interface TraceDetailViewProps {
   defaultCollapsedSpanIds?: ReadonlySet<SpanId>
   onCollapsedSpanIdsChange?: (collapsed: ReadonlySet<SpanId>) => void
 
-
   metrics?: Partial<Metrics>
   theme?: Partial<ThemeTokens>
   spanColorMode?: SpanColorMode
@@ -41,10 +39,6 @@ export interface TraceDetailViewProps {
   servicePalette?: readonly string[]
   zoomOnWheel?: boolean
   height?: number | string
-
-
-
-
 
   locale?: string
 
@@ -54,13 +48,9 @@ export interface TraceDetailViewProps {
   showDetailPanel?: boolean
   detailPanelHeight?: number | string
 
-
   renderToolbar?: (view: TraceView) => ReactNode
 
   renderSpanDetail?: (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => ReactNode
-
-
-
 
   renderSpanDetailActions?: (span: SpanData, trace: TraceData, api: TraceDetailViewApi) => ReactNode
 
@@ -71,7 +61,6 @@ export interface TraceDetailViewProps {
   className?: string
   style?: CSSProperties
 }
-
 
 function themeToInlineVars(theme: Partial<ThemeTokens> | undefined): CSSProperties {
   if (theme === undefined) return {}
@@ -111,7 +100,6 @@ export function TraceDetailView(props: TraceDetailViewProps) {
     () => resolveMessages(locale, messagesOverrides),
     [locale, messagesOverrides],
   )
-
 
   useEffect(() => acquireThemeDefaults(), [])
 
@@ -154,7 +142,6 @@ export function TraceDetailView(props: TraceDetailViewProps) {
           height,
           minHeight: 0,
 
-
           overflow: 'auto',
           background: themeVar('bg'),
           color: themeVar('text'),
@@ -192,9 +179,7 @@ export function TraceDetailView(props: TraceDetailViewProps) {
                 />
               ))}
 
-            {
-
-}
+            {}
             <div style={{ flex: '1 1 0%', minHeight: 80, overflow: 'hidden' }}>
               <TraceTimeline
                 trace={trace}
@@ -220,7 +205,6 @@ export function TraceDetailView(props: TraceDetailViewProps) {
                 height={detailPanelHeight}
                 {...(servicePalette === undefined ? {} : { servicePalette })}
                 onSelectSpan={(spanId) => view.dispatch({ type: 'focusSpan', spanId })}
-
 
                 {...(renderSpanDetail === undefined
                   ? {}

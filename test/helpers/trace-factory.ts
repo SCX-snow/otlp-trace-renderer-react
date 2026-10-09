@@ -3,7 +3,6 @@ import type { RawSpan, TraceData } from '../../src/headless/model/types'
 
 export const BASE_NS = 1_700_000_000_000_000_000n
 
-
 export const at = (offsetUs: number) => (BASE_NS + BigInt(Math.round(offsetUs)) * 1000n).toString()
 
 export const RESOURCES = [{ attributes: { 'service.name': 'svc' }, serviceName: 'svc' }]
@@ -37,7 +36,6 @@ export function toTraceData(
   return normalizeTrace({ traceId, spans, resources })
 }
 
-
 export function multiServiceTrace(names: string[]): TraceData {
   const resources = names.map((serviceName) => ({
     attributes: { 'service.name': serviceName },
@@ -49,7 +47,6 @@ export function multiServiceTrace(names: string[]): TraceData {
   }))
   return toTraceData(spans, undefined, resources)
 }
-
 
 export function makeTraceData(count = 5000): TraceData {
   const spans: RawSpan[] = []
@@ -64,7 +61,6 @@ export function makeTraceData(count = 5000): TraceData {
 
 export const spanIdOf = (i: number) => `s${String(i).padStart(6, '0')}`
 
-
 export function makeDeepChain(depth: number): TraceData {
   const spans: RawSpan[] = []
   for (let i = 0; i < depth; i++) {
@@ -72,7 +68,6 @@ export function makeDeepChain(depth: number): TraceData {
   }
   return toTraceData(spans)
 }
-
 
 export function shuffle<T>(input: T[]): T[] {
   const out = input.slice()
